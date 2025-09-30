@@ -57,502 +57,537 @@
         </div>
       </div>
 
-        <main>
-          <section class="search-section">
-            <div class="search-container">
-              <div class="search-input-group">
-                <input type="text" id="location-input" placeholder="Enter city or zip code..." />
-                <button id="search-btn">
-                  <i class="fas fa-search"></i> Search
-                </button>
-                <button id="current-location-btn" class="icon-btn" title="Use Current Location">
-                  <i class="fas fa-location-crosshairs"></i>
-                </button>
-              </div>
-              <div class="city-selector">
-                <select id="capital-cities" class="capital-dropdown">
-                  <optgroup label="Asia">
-                    <option value="Kabul">Kabul, Afghanistan</option>
-                    <option value="Yerevan">Yerevan, Armenia</option>
-                    <option value="Manama">Manama, Bahrain</option>
-                    <option value="Dhaka">Dhaka, Bangladesh</option>
-                    <option value="Thimphu">Thimphu, Bhutan</option>
-                    <option value="Beijing">Beijing, China</option>
-                    <option value="Nicosia">Nicosia, Cyprus</option>
-                    <option value="Tbilisi">Tbilisi, Georgia</option>
-                    <option value="New Delhi">New Delhi, India</option>
-                    <option value="Jakarta">Jakarta, Indonesia</option>
-                    <option value="Tehran">Tehran, Iran</option>
-                    <option value="Baghdad">Baghdad, Iraq</option>
-                    <option value="Jerusalem">Jerusalem, Israel</option>
-                    <option value="Tokyo">Tokyo, Japan</option>
-                    <option value="Amman">Amman, Jordan</option>
-                    <option value="Astana">Astana, Kazakhstan</option>
-                    <option value="Kuwait City">Kuwait City, Kuwait</option>
-                    <option value="Bishkek">Bishkek, Kyrgyzstan</option>
-                    <option value="Vientiane">Vientiane, Laos</option>
-                    <option value="Beirut">Beirut, Lebanon</option>
-                    <option value="Kuala Lumpur">Kuala Lumpur, Malaysia</option>
-                    <option value="Male">Malé, Maldives</option>
-                    <option value="Ulaanbaatar">Ulaanbaatar, Mongolia</option>
-                    <option value="Yangon... Naypyidaw">
-                      Naypyidaw, Myanmar
-                    </option>
-                    <option value="Katmandu">Kathmandu, Nepal</option>
-                    <option value="Muscat">Muscat, Oman</option>
-                    <option value="Islamabad">Islamabad, Pakistan</option>
-                    <option value="Doha">Doha, Qatar</option>
-                    <option value="Riyadh">Riyadh, Saudi Arabia</option>
-                    <option value="Singapore">Singapore, Singapore</option>
-                    <option value="Seoul">Seoul, South Korea</option>
-                    <option value="Colombo... Sri Jayawardenepura Kotte">
-                      Sri Jayawardenepura Kotte, Sri Lanka
-                    </option>
-                    <option value="Damascus">Damascus, Syria</option>
-                    <option value="Taipei">Taipei, Taiwan</option>
-                    <option value="Dushanbe">Dushanbe, Tajikistan</option>
-                    <option value="Bangkok">Bangkok, Thailand</option>
-                    <option value="Ashgabat">Ashgabat, Turkmenistan</option>
-                    <option value="Abu Dhabi">
-                      Abu Dhabi, United Arab Emirates
-                    </option>
-                    <option value="Tashkent">Tashkent, Uzbekistan</option>
-                    <option value="Hanoi">Hanoi, Vietnam</option>
-                    <option value="Sana'a">Sana’a, Yemen</option>
-                  </optgroup>
-
-                  <optgroup label="Europe">
-                    <option value="Tirana">Tirana, Albania</option>
-                    <option value="Andorra la Vella">
-                      Andorra la Vella, Andorra
-                    </option>
-                    <option value="Vienna">Vienna, Austria</option>
-                    <option value="Minsk">Minsk, Belarus</option>
-                    <option value="Brussels">Brussels, Belgium</option>
-                    <option value="Sofia">Sofia, Bulgaria</option>
-                    <option value="Zagreb">Zagreb, Croatia</option>
-                    <option value="Prague">Prague, Czechia</option>
-                    <option value="Copenhagen">Copenhagen, Denmark</option>
-                    <option value="Tallinn">Tallinn, Estonia</option>
-                    <option value="Helsinki">Helsinki, Finland</option>
-                    <option value="Paris">Paris, France</option>
-                    <option value="Berlin">Berlin, Germany</option>
-                    <option value="Athens">Athens, Greece</option>
-                    <option value="Budapest">Budapest, Hungary</option>
-                    <option value="Reykjavik">Reykjavik, Iceland</option>
-                    <option value="Dublin">Dublin, Ireland</option>
-                    <option value="Rome">Rome, Italy</option>
-                    <option value="Pristina">Pristina, Kosovo</option>
-                    <option value="Riga">Riga, Latvia</option>
-                    <option value="Vaduz">Vaduz, Liechtenstein</option>
-                    <option value="Vilnius">Vilnius, Lithuania</option>
-                    <option value="Luxembourg">Luxembourg, Luxembourg</option>
-                    <option value="Valletta">Valletta, Malta</option>
-                    <option value="Chisinau">Chisinau, Moldova</option>
-                    <option value="Monaco">Monaco, Monaco</option>
-                    <option value="Podgorica">Podgorica, Montenegro</option>
-                    <option value="Amsterdam">Amsterdam, Netherlands</option>
-                    <option value="Skopje">Skopje, North Macedonia</option>
-                    <option value="Oslo">Oslo, Norway</option>
-                    <option value="Warsaw">Warsaw, Poland</option>
-                    <option value="Lisbon">Lisbon, Portugal</option>
-                    <option value="Bucharest">Bucharest, Romania</option>
-                    <option value="Moscow">Moscow, Russia</option>
-                    <option value="Belgrade">Belgrade, Serbia</option>
-                    <option value="Bratislava">Bratislava, Slovakia</option>
-                    <option value="Ljubljana">Ljubljana, Slovenia</option>
-                    <option value="Madrid">Madrid, Spain</option>
-                    <option value="Stockholm">Stockholm, Sweden</option>
-                    <option value="Bern">Bern, Switzerland</option>
-                    <option value="Kyiv">Kyiv, Ukraine</option>
-                    <option value="London">London, United Kingdom</option>
-                    <option value="Vatican City">
-                      Vatican City, Vatican City
-                    </option>
-                  </optgroup>
-
-                  <optgroup label="Americas">
-                    <option value="Ottawa">Ottawa, Canada</option>
-                    <option value="Washington D.C.">
-                      Washington D.C., United States
-                    </option>
-                    <option value="Mexico City">Mexico City, Mexico</option>
-                    <option value="Guatemala City">
-                      Guatemala City, Guatemala
-                    </option>
-                    <option value="Belmopan">Belmopan, Belize</option>
-                    <option value="San Salvador">
-                      San Salvador, El Salvador
-                    </option>
-                    <option value="Tegucigalpa">Tegucigalpa, Honduras</option>
-                    <option value="Managua">Managua, Nicaragua</option>
-                    <option value="San José">San José, Costa Rica</option>
-                    <option value="Panama City">Panama City, Panama</option>
-                    <option value="Bogotá">Bogotá, Colombia</option>
-                    <option value="Caracas">Caracas, Venezuela</option>
-                    <option value="Quito">Quito, Ecuador</option>
-                    <option value="Lima">Lima, Peru</option>
-                    <option value="La Paz ... Sucre">
-                      La Paz (exec) / Sucre (official), Bolivia
-                    </option>
-                    <option value="Brasília">Brasília, Brazil</option>
-                    <option value="Buenos Aires">Buenos Aires, Argentina</option>
-                    <option value="Santiago">Santiago, Chile</option>
-                    <option value="Montevideo">Montevideo, Uruguay</option>
-                    <option value="Asunción">Asunción, Paraguay</option>
-                    <option value="Paramaribo">Paramaribo, Suriname</option>
-                    <option value="Georgetown">Georgetown, Guyana</option>
-                    <option value="Kingston">Kingston, Jamaica</option>
-                    <option value="Port of Spain">
-                      Port-of-Spain, Trinidad and Tobago
-                    </option>
-                    <option value="Havana">Havana, Cuba</option>
-                    <option value="Santo Domingo">
-                      Santo Domingo, Dominican Republic
-                    </option>
-                    <option value="Roseau">Roseau, Dominica</option>
-                    <option value="Basseterre">
-                      Basseterre, Saint Kitts and Nevis
-                    </option>
-                    <option value="Castries">Castries, Saint Lucia</option>
-                    <option value="Kingstown">
-                      Kingstown, Saint Vincent and the Grenadines
-                    </option>
-                    <option value="Bridgetown">Bridgetown, Barbados</option>
-                    <option value="Belmopan">Belmopan</option>
-                  </optgroup>
-
-                  <optgroup label="Africa">
-                    <option value="Algiers">Algiers, Algeria</option>
-                    <option value="Luanda">Luanda, Angola</option>
-                    <option value="Porto-Novo">Porto-Novo, Benin</option>
-                    <option value="Gaborone">Gaborone, Botswana</option>
-                    <option value="Ouagadougou">Ouagadougou, Burkina Faso</option>
-                    <option value="Gitega">Gitega, Burundi</option>
-                    <option value="Praia">Praia, Cabo Verde</option>
-                    <option value="Yaoundé">Yaoundé, Cameroon</option>
-                    <option value="Bangui">
-                      Bangui, Central African Republic
-                    </option>
-                    <option value="N'Djamena">N’Djamena, Chad</option>
-                    <option value="Moroni">Moroni, Comoros</option>
-                    <option value="Kinshasa">Kinshasa, DR Congo</option>
-                    <option value="Brazzaville">
-                      Brazzaville, Republic of the Congo
-                    </option>
-                    <option value="Cairo">Cairo, Egypt</option>
-                    <option value="Malabo">Malabo, Equatorial Guinea</option>
-                    <option value="Asmara">Asmara, Eritrea</option>
-                    <option value="Addis Ababa">Addis Ababa, Ethiopia</option>
-                    <option value="Libreville">Libreville, Gabon</option>
-                    <option value="Banjul">Banjul, The Gambia</option>
-                    <option value="Accra">Accra, Ghana</option>
-                    <option value="Conakry">Conakry, Guinea</option>
-                    <option value="Bissau">Bissau, Guinea-Bissau</option>
-                    <option value="Yamoussoukro">
-                      Yamoussoukro, Ivory Coast
-                    </option>
-                    <option value="Nairobi">Nairobi, Kenya</option>
-                    <option value="Mas‐eru">Maseru, Lesotho</option>
-                    <option value="Monrovia">Monrovia, Liberia</option>
-                    <option value="Tripoli">Tripoli, Libya</option>
-                    <option value="Antananarivo">Antananarivo, Madagascar</option>
-                    <option value="Lilongwe">Lilongwe, Malawi</option>
-                    <option value="Bamako">Bamako, Mali</option>
-                    <option value="Nouakchott">Nouakchott, Mauritania</option>
-                    <option value="Port Louis">Port Louis, Mauritius</option>
-                    <option value="Rabat">Rabat, Morocco</option>
-                    <option value="Maputo">Maputo, Mozambique</option>
-                    <option value="Windhoek">Windhoek, Namibia</option>
-                    <option value="Niamey">Niamey, Niger</option>
-                    <option value="Abuja">Abuja, Nigeria</option>
-                    <option value="Kigali">Kigali, Rwanda</option>
-                    <option value="São Tomé">
-                      São Tomé, São Tomé and Príncipe
-                    </option>
-                    <option value="Dakar">Dakar, Senegal</option>
-                    <option value="Victoria">Victoria, Seychelles</option>
-                    <option value="Freetown">Freetown, Sierra Leone</option>
-                    <option value="Mogadishu">Mogadishu, Somalia</option>
-                    <option value="Pretoria... Capetown... Bloemfontein">
-                      Pretoria (exec), Cape Town (leg), Bloemfontein (judicial),
-                      South Africa
-                    </option>
-                    <option value="Juba">Juba, South Sudan</option>
-                    <option value="Khartoum">Khartoum, Sudan</option>
-                    <option value="Dodoma">Dodoma, Tanzania</option>
-                    <option value="Tunis">Tunis, Tunisia</option>
-                    <option value="Kampala">Kampala, Uganda</option>
-                    <option value="Lusaka">Lusaka, Zambia</option>
-                    <option value="Harare">Harare, Zimbabwe</option>
-                  </optgroup>
-
-                  <optgroup label="Oceania">
-                    <option value="Canberra">Canberra, Australia</option>
-                    <option value="Suva">Suva, Fiji</option>
-                    <option value="Tarawa">Tarawa, Kiribati</option>
-                    <option value="Majuro">Majuro, Marshall Islands</option>
-                    <option value="Palikir">Palikir, Micronesia</option>
-                    <option value="Port Moresby">
-                      Port Moresby, Papua New Guinea
-                    </option>
-                    <option value="Wellington">Wellington, New Zealand</option>
-                    <option value="Ngerulmud">Ngerulmud, Palau</option>
-                    <option value="Apia">Apia, Samoa</option>
-                    <option value="Honiara">Honiara, Solomon Islands</option>
-                    <option value="Port Vila">Port Vila, Vanuatu</option>
-                    <option value="Male">Funafuti, Tuvalu</option>
-                    <option value="Nuku'alofa">Nuku‘alofa, Tonga</option>
-                  </optgroup>
-                </select>
-                <div class="dropdown-icon">
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-              </div>
+      <main>
+        <section class="search-section">
+          <div class="search-container">
+            <div class="search-input-group">
+              <input type="text" id="location-input" placeholder="Enter city or zip code..." />
+              <button id="search-btn">
+                <i class="fas fa-search"></i> Search
+              </button>
+              <button id="current-location-btn" class="icon-btn" title="Use Current Location">
+                <i class="fas fa-location-crosshairs"></i>
+              </button>
             </div>
-          </section>
+            <div class="city-selector">
+              <select id="capital-cities" class="capital-dropdown">
+                <optgroup label="Asia">
+                  <option value="Kabul">Kabul, Afghanistan</option>
+                  <option value="Yerevan">Yerevan, Armenia</option>
+                  <option value="Manama">Manama, Bahrain</option>
+                  <option value="Dhaka">Dhaka, Bangladesh</option>
+                  <option value="Thimphu">Thimphu, Bhutan</option>
+                  <option value="Beijing">Beijing, China</option>
+                  <option value="Nicosia">Nicosia, Cyprus</option>
+                  <option value="Tbilisi">Tbilisi, Georgia</option>
+                  <option value="New Delhi">New Delhi, India</option>
+                  <option value="Jakarta">Jakarta, Indonesia</option>
+                  <option value="Tehran">Tehran, Iran</option>
+                  <option value="Baghdad">Baghdad, Iraq</option>
+                  <option value="Jerusalem">Jerusalem, Israel</option>
+                  <option value="Tokyo">Tokyo, Japan</option>
+                  <option value="Amman">Amman, Jordan</option>
+                  <option value="Astana">Astana, Kazakhstan</option>
+                  <option value="Kuwait City">Kuwait City, Kuwait</option>
+                  <option value="Bishkek">Bishkek, Kyrgyzstan</option>
+                  <option value="Vientiane">Vientiane, Laos</option>
+                  <option value="Beirut">Beirut, Lebanon</option>
+                  <option value="Kuala Lumpur">Kuala Lumpur, Malaysia</option>
+                  <option value="Male">Malé, Maldives</option>
+                  <option value="Ulaanbaatar">Ulaanbaatar, Mongolia</option>
+                  <option value="Yangon... Naypyidaw">
+                    Naypyidaw, Myanmar
+                  </option>
+                  <option value="Katmandu">Kathmandu, Nepal</option>
+                  <option value="Muscat">Muscat, Oman</option>
+                  <option value="Islamabad">Islamabad, Pakistan</option>
+                  <option value="Doha">Doha, Qatar</option>
+                  <option value="Riyadh">Riyadh, Saudi Arabia</option>
+                  <option value="Singapore">Singapore, Singapore</option>
+                  <option value="Seoul">Seoul, South Korea</option>
+                  <option value="Colombo... Sri Jayawardenepura Kotte">
+                    Sri Jayawardenepura Kotte, Sri Lanka
+                  </option>
+                  <option value="Damascus">Damascus, Syria</option>
+                  <option value="Taipei">Taipei, Taiwan</option>
+                  <option value="Dushanbe">Dushanbe, Tajikistan</option>
+                  <option value="Bangkok">Bangkok, Thailand</option>
+                  <option value="Ashgabat">Ashgabat, Turkmenistan</option>
+                  <option value="Abu Dhabi">
+                    Abu Dhabi, United Arab Emirates
+                  </option>
+                  <option value="Tashkent">Tashkent, Uzbekistan</option>
+                  <option value="Hanoi">Hanoi, Vietnam</option>
+                  <option value="Sana'a">Sana’a, Yemen</option>
+                </optgroup>
 
-          <section class="current-weather">
-            <div class="weather-card main-card">
-              <div class="location-info">
-                <h2 id="current-location">Loading location...</h2>
-                <p id="current-date">-- -- ----</p>
-              </div>
-              <div class="weather-main">
-                <div class="weather-icon">
-                  <i id="current-weather-icon" class="fas fa-question"></i>
-                  <p id="current-weather-desc">--</p>
-                </div>
-                <div class="weather-temp">
-                  <h1 id="current-temp">--°</h1>
-                  <div class="temp-range">
-                    <span id="current-high">H: --°</span>
-                    <span id="current-low">L: --°</span>
-                  </div>
-                </div>
-              </div>
-              <div class="weather-details">
-                <div class="detail-item">
-                  <i class="fas fa-temperature-half"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Feels Like</span>
-                    <span id="current-feels-like">--°</span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-wind"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Wind</span>
-                    <span id="current-wind">-- km/h</span>
-                    <div class="wind-direction" id="wind-direction">
-                      <i class="fas fa-location-arrow"></i>
-                    </div>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-tint"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Humidity</span>
-                    <span id="current-humidity">--%</span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-compress-alt"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Pressure</span>
-                    <span id="current-pressure">-- hPa</span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-eye"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Visibility</span>
-                    <span id="current-visibility">-- km</span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-cloud"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Cloudiness</span>
-                    <span id="current-clouds">--%</span>
-                  </div>
-                </div>
-              </div>
+                <optgroup label="Europe">
+                  <option value="Tirana">Tirana, Albania</option>
+                  <option value="Andorra la Vella">
+                    Andorra la Vella, Andorra
+                  </option>
+                  <option value="Vienna">Vienna, Austria</option>
+                  <option value="Minsk">Minsk, Belarus</option>
+                  <option value="Brussels">Brussels, Belgium</option>
+                  <option value="Sofia">Sofia, Bulgaria</option>
+                  <option value="Zagreb">Zagreb, Croatia</option>
+                  <option value="Prague">Prague, Czechia</option>
+                  <option value="Copenhagen">Copenhagen, Denmark</option>
+                  <option value="Tallinn">Tallinn, Estonia</option>
+                  <option value="Helsinki">Helsinki, Finland</option>
+                  <option value="Paris">Paris, France</option>
+                  <option value="Berlin">Berlin, Germany</option>
+                  <option value="Athens">Athens, Greece</option>
+                  <option value="Budapest">Budapest, Hungary</option>
+                  <option value="Reykjavik">Reykjavik, Iceland</option>
+                  <option value="Dublin">Dublin, Ireland</option>
+                  <option value="Rome">Rome, Italy</option>
+                  <option value="Pristina">Pristina, Kosovo</option>
+                  <option value="Riga">Riga, Latvia</option>
+                  <option value="Vaduz">Vaduz, Liechtenstein</option>
+                  <option value="Vilnius">Vilnius, Lithuania</option>
+                  <option value="Luxembourg">Luxembourg, Luxembourg</option>
+                  <option value="Valletta">Valletta, Malta</option>
+                  <option value="Chisinau">Chisinau, Moldova</option>
+                  <option value="Monaco">Monaco, Monaco</option>
+                  <option value="Podgorica">Podgorica, Montenegro</option>
+                  <option value="Amsterdam">Amsterdam, Netherlands</option>
+                  <option value="Skopje">Skopje, North Macedonia</option>
+                  <option value="Oslo">Oslo, Norway</option>
+                  <option value="Warsaw">Warsaw, Poland</option>
+                  <option value="Lisbon">Lisbon, Portugal</option>
+                  <option value="Bucharest">Bucharest, Romania</option>
+                  <option value="Moscow">Moscow, Russia</option>
+                  <option value="Belgrade">Belgrade, Serbia</option>
+                  <option value="Bratislava">Bratislava, Slovakia</option>
+                  <option value="Ljubljana">Ljubljana, Slovenia</option>
+                  <option value="Madrid">Madrid, Spain</option>
+                  <option value="Stockholm">Stockholm, Sweden</option>
+                  <option value="Bern">Bern, Switzerland</option>
+                  <option value="Kyiv">Kyiv, Ukraine</option>
+                  <option value="London">London, United Kingdom</option>
+                  <option value="Vatican City">
+                    Vatican City, Vatican City
+                  </option>
+                </optgroup>
 
-              <!-- UV Index & Air Quality -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
-                <div>
-                  <h4><i class="fas fa-sun"></i> UV Index</h4>
-                  <div id="uv-index">Loading...</div>
-                </div>
-                <div>
-                  <h4><i class="fas fa-wind"></i> Air Quality</h4>
-                  <div id="aqi-value">Loading...</div>
-                </div>
-              </div>
-              <div id="weather-alerts" class="weather-alerts"></div>
-            </div>
-          </section>
+                <optgroup label="Americas">
+                  <option value="Ottawa">Ottawa, Canada</option>
+                  <option value="Washington D.C.">
+                    Washington D.C., United States
+                  </option>
+                  <option value="Mexico City">Mexico City, Mexico</option>
+                  <option value="Guatemala City">
+                    Guatemala City, Guatemala
+                  </option>
+                  <option value="Belmopan">Belmopan, Belize</option>
+                  <option value="San Salvador">
+                    San Salvador, El Salvador
+                  </option>
+                  <option value="Tegucigalpa">Tegucigalpa, Honduras</option>
+                  <option value="Managua">Managua, Nicaragua</option>
+                  <option value="San José">San José, Costa Rica</option>
+                  <option value="Panama City">Panama City, Panama</option>
+                  <option value="Bogotá">Bogotá, Colombia</option>
+                  <option value="Caracas">Caracas, Venezuela</option>
+                  <option value="Quito">Quito, Ecuador</option>
+                  <option value="Lima">Lima, Peru</option>
+                  <option value="La Paz ... Sucre">
+                    La Paz (exec) / Sucre (official), Bolivia
+                  </option>
+                  <option value="Brasília">Brasília, Brazil</option>
+                  <option value="Buenos Aires">Buenos Aires, Argentina</option>
+                  <option value="Santiago">Santiago, Chile</option>
+                  <option value="Montevideo">Montevideo, Uruguay</option>
+                  <option value="Asunción">Asunción, Paraguay</option>
+                  <option value="Paramaribo">Paramaribo, Suriname</option>
+                  <option value="Georgetown">Georgetown, Guyana</option>
+                  <option value="Kingston">Kingston, Jamaica</option>
+                  <option value="Port of Spain">
+                    Port-of-Spain, Trinidad and Tobago
+                  </option>
+                  <option value="Havana">Havana, Cuba</option>
+                  <option value="Santo Domingo">
+                    Santo Domingo, Dominican Republic
+                  </option>
+                  <option value="Roseau">Roseau, Dominica</option>
+                  <option value="Basseterre">
+                    Basseterre, Saint Kitts and Nevis
+                  </option>
+                  <option value="Castries">Castries, Saint Lucia</option>
+                  <option value="Kingstown">
+                    Kingstown, Saint Vincent and the Grenadines
+                  </option>
+                  <option value="Bridgetown">Bridgetown, Barbados</option>
+                  <option value="Belmopan">Belmopan</option>
+                </optgroup>
 
-          <div class="sun-times">
-            <div class="sun-time-item">
-              <i class="fas fa-sunrise"></i>
-              <div>
-                <small>Sunrise</small>
-                <div id="sunrise-time">--:--</div>
-              </div>
-            </div>
-            <div class="sun-time-item">
-              <i class="fas fa-sunset"></i>
-              <div>
-                <small>Sunset</small>
-                <div id="sunset-time">--:--</div>
+                <optgroup label="Africa">
+                  <option value="Algiers">Algiers, Algeria</option>
+                  <option value="Luanda">Luanda, Angola</option>
+                  <option value="Porto-Novo">Porto-Novo, Benin</option>
+                  <option value="Gaborone">Gaborone, Botswana</option>
+                  <option value="Ouagadougou">Ouagadougou, Burkina Faso</option>
+                  <option value="Gitega">Gitega, Burundi</option>
+                  <option value="Praia">Praia, Cabo Verde</option>
+                  <option value="Yaoundé">Yaoundé, Cameroon</option>
+                  <option value="Bangui">
+                    Bangui, Central African Republic
+                  </option>
+                  <option value="N'Djamena">N’Djamena, Chad</option>
+                  <option value="Moroni">Moroni, Comoros</option>
+                  <option value="Kinshasa">Kinshasa, DR Congo</option>
+                  <option value="Brazzaville">
+                    Brazzaville, Republic of the Congo
+                  </option>
+                  <option value="Cairo">Cairo, Egypt</option>
+                  <option value="Malabo">Malabo, Equatorial Guinea</option>
+                  <option value="Asmara">Asmara, Eritrea</option>
+                  <option value="Addis Ababa">Addis Ababa, Ethiopia</option>
+                  <option value="Libreville">Libreville, Gabon</option>
+                  <option value="Banjul">Banjul, The Gambia</option>
+                  <option value="Accra">Accra, Ghana</option>
+                  <option value="Conakry">Conakry, Guinea</option>
+                  <option value="Bissau">Bissau, Guinea-Bissau</option>
+                  <option value="Yamoussoukro">
+                    Yamoussoukro, Ivory Coast
+                  </option>
+                  <option value="Nairobi">Nairobi, Kenya</option>
+                  <option value="Mas‐eru">Maseru, Lesotho</option>
+                  <option value="Monrovia">Monrovia, Liberia</option>
+                  <option value="Tripoli">Tripoli, Libya</option>
+                  <option value="Antananarivo">Antananarivo, Madagascar</option>
+                  <option value="Lilongwe">Lilongwe, Malawi</option>
+                  <option value="Bamako">Bamako, Mali</option>
+                  <option value="Nouakchott">Nouakchott, Mauritania</option>
+                  <option value="Port Louis">Port Louis, Mauritius</option>
+                  <option value="Rabat">Rabat, Morocco</option>
+                  <option value="Maputo">Maputo, Mozambique</option>
+                  <option value="Windhoek">Windhoek, Namibia</option>
+                  <option value="Niamey">Niamey, Niger</option>
+                  <option value="Abuja">Abuja, Nigeria</option>
+                  <option value="Kigali">Kigali, Rwanda</option>
+                  <option value="São Tomé">
+                    São Tomé, São Tomé and Príncipe
+                  </option>
+                  <option value="Dakar">Dakar, Senegal</option>
+                  <option value="Victoria">Victoria, Seychelles</option>
+                  <option value="Freetown">Freetown, Sierra Leone</option>
+                  <option value="Mogadishu">Mogadishu, Somalia</option>
+                  <option value="Pretoria... Capetown... Bloemfontein">
+                    Pretoria (exec), Cape Town (leg), Bloemfontein (judicial),
+                    South Africa
+                  </option>
+                  <option value="Juba">Juba, South Sudan</option>
+                  <option value="Khartoum">Khartoum, Sudan</option>
+                  <option value="Dodoma">Dodoma, Tanzania</option>
+                  <option value="Tunis">Tunis, Tunisia</option>
+                  <option value="Kampala">Kampala, Uganda</option>
+                  <option value="Lusaka">Lusaka, Zambia</option>
+                  <option value="Harare">Harare, Zimbabwe</option>
+                </optgroup>
+
+                <optgroup label="Oceania">
+                  <option value="Canberra">Canberra, Australia</option>
+                  <option value="Suva">Suva, Fiji</option>
+                  <option value="Tarawa">Tarawa, Kiribati</option>
+                  <option value="Majuro">Majuro, Marshall Islands</option>
+                  <option value="Palikir">Palikir, Micronesia</option>
+                  <option value="Port Moresby">
+                    Port Moresby, Papua New Guinea
+                  </option>
+                  <option value="Wellington">Wellington, New Zealand</option>
+                  <option value="Ngerulmud">Ngerulmud, Palau</option>
+                  <option value="Apia">Apia, Samoa</option>
+                  <option value="Honiara">Honiara, Solomon Islands</option>
+                  <option value="Port Vila">Port Vila, Vanuatu</option>
+                  <option value="Male">Funafuti, Tuvalu</option>
+                  <option value="Nuku'alofa">Nuku‘alofa, Tonga</option>
+                </optgroup>
+              </select>
+              <div class="dropdown-icon">
+                <i class="fas fa-chevron-down"></i>
               </div>
             </div>
           </div>
+        </section>
 
-          <section class="forecast-section">
-            <h2><i class="fas fa-calendar-alt"></i> 5-Day Forecast</h2>
-            <div class="forecast-container" id="forecast-container"></div>
-          </section>
-
-          <section class="hourly-forecast-section">
-            <h2><i class="fas fa-clock"></i> 24-Hour Forecast</h2>
-            <div class="hourly-forecast-container" id="hourly-forecast-container"></div>
-            <div class="chart-container">
-              <canvas id="temp-chart"></canvas>
+        <section class="current-weather">
+          <div class="weather-card main-card">
+            <div class="location-info">
+              <h2 id="current-location">Loading location...</h2>
+              <p id="current-date">-- -- ----</p>
             </div>
-          </section>
-
-          <section class="weather-insights-section">
-            <h2><i class="fas fa-lightbulb"></i> Weather Insights</h2>
-            <div class="insights-grid">
-              <div class="insight-card" id="feels-like-card">
-                <h3><i class="fas fa-temperature-half"></i> Feels Like Analysis</h3>
-                <div id="feels-like-content">
-                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
-                </div>
+            <div class="weather-main">
+              <div class="weather-icon">
+                <i id="current-weather-icon" class="fas fa-question"></i>
+                <p id="current-weather-desc">--</p>
               </div>
-              
-              <div class="insight-card" id="moon-phase-card">
-                <h3><i class="fas fa-moon"></i> Moon Phase</h3>
-                <div id="moon-phase-content">
-                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
-                </div>
-              </div>
-              
-              <div class="insight-card" id="best-time-card">
-                <h3><i class="fas fa-clock"></i> Best Time Today</h3>
-                <div id="best-time-content">
-                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
-                </div>
-              </div>
-              
-              <div class="insight-card" id="weather-stats-card">
-                <h3><i class="fas fa-chart-bar"></i> Today's Statistics</h3>
-                <div id="weather-stats-content">
-                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              <div class="weather-temp">
+                <h1 id="current-temp">--°</h1>
+                <div class="temp-range">
+                  <span id="current-high">H: --°</span>
+                  <span id="current-low">L: --°</span>
                 </div>
               </div>
             </div>
-          </section>
-
-          <section class="ai-analysis">
-            <h2><i class="fas fa-brain"></i> AI Weather Analysis & Suggestions</h2>
-            <div class="ai-card" id="ai-analysis-content">
-              <div class="ai-loading">
-                <div class="ai-loader"></div>
-                <p>Analyzing weather patterns...</p>
+            <div class="weather-details">
+              <div class="detail-item">
+                <i class="fas fa-temperature-half"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Feels Like</span>
+                  <span id="current-feels-like">--°</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-wind"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Wind</span>
+                  <span id="current-wind">-- km/h</span>
+                  <div class="wind-direction" id="wind-direction">
+                    <i class="fas fa-location-arrow"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-tint"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Humidity</span>
+                  <span id="current-humidity">--%</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-compress-alt"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Pressure</span>
+                  <span id="current-pressure">-- hPa</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-eye"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Visibility</span>
+                  <span id="current-visibility">-- km</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <i class="fas fa-cloud"></i>
+                <div class="detail-content">
+                  <span class="detail-label">Cloudiness</span>
+                  <span id="current-clouds">--%</span>
+                </div>
               </div>
             </div>
-          </section>
 
-
-          <!-- Settings Modal -->
-          <div id="settings-modal" class="modal">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h2><i class="fas fa-cog"></i> Settings</h2>
-                <button class="close-btn" id="close-settings">
-                  <i class="fas fa-times"></i>
-                </button>
+            <!-- UV Index & Air Quality -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+              <div>
+                <h4><i class="fas fa-sun"></i> UV Index</h4>
+                <div id="uv-index">Loading...</div>
               </div>
-              <div class="modal-body">
-                <div class="setting-group">
-                  <h3>Temperature Unit</h3>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="temp-unit" value="metric" checked />
-                      <span>Celsius (°C)</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="temp-unit" value="imperial" />
-                      <span>Fahrenheit (°F)</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="temp-unit" value="kelvin" />
-                      <span>Kelvin (K)</span>
-                    </label>
-                  </div>
-                </div>
-                <div class="setting-group">
-                  <h3>Wind Speed Unit</h3>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="wind-unit" value="kmh" checked />
-                      <span>km/h</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="wind-unit" value="mph" />
-                      <span>mph</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="wind-unit" value="ms" />
-                      <span>m/s</span>
-                    </label>
-                  </div>
-                </div>
-                <div class="setting-group">
-                  <h3>Pressure Unit</h3>
-                  <div class="radio-group">
-                    <label class="radio-label">
-                      <input type="radio" name="pressure-unit" value="hpa" checked />
-                      <span>hPa</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="pressure-unit" value="inhg" />
-                      <span>inHg</span>
-                    </label>
-                    <label class="radio-label">
-                      <input type="radio" name="pressure-unit" value="mmhg" />
-                      <span>mmHg</span>
-                    </label>
-                  </div>
-                </div>
-                <div class="setting-group">
-                  <h3>Notifications</h3>
-                  <label class="checkbox-label">
-                    <input type="checkbox" id="enable-notifications" />
-                    <span>Enable weather alerts</span>
+              <div>
+                <h4><i class="fas fa-wind"></i> Air Quality</h4>
+                <div id="aqi-value">Loading...</div>
+              </div>
+            </div>
+            <div id="weather-alerts" class="weather-alerts"></div>
+          </div>
+        </section>
+
+        <div class="sun-times">
+          <div class="sun-time-item">
+            <i class="fas fa-sunrise"></i>
+            <div>
+              <small>Sunrise</small>
+              <div id="sunrise-time">--:--</div>
+            </div>
+          </div>
+          <div class="sun-time-item">
+            <i class="fas fa-sunset"></i>
+            <div>
+              <small>Sunset</small>
+              <div id="sunset-time">--:--</div>
+            </div>
+          </div>
+        </div>
+
+        <section class="forecast-section">
+          <h2><i class="fas fa-calendar-alt"></i> 5-Day Forecast</h2>
+          <div class="forecast-container" id="forecast-container"></div>
+        </section>
+
+        <section class="hourly-forecast-section">
+          <h2><i class="fas fa-clock"></i> 24-Hour Forecast</h2>
+          <div class="hourly-forecast-container" id="hourly-forecast-container"></div>
+          <div class="chart-container">
+            <canvas id="temp-chart"></canvas>
+          </div>
+        </section>
+
+        <section class="weather-insights-section">
+          <h2><i class="fas fa-lightbulb"></i> Weather Insights</h2>
+          <div class="insights-grid">
+            <div class="insight-card" id="feels-like-card">
+              <h3><i class="fas fa-temperature-half"></i> Feels Like Analysis</h3>
+              <div id="feels-like-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="moon-phase-card">
+              <h3><i class="fas fa-moon"></i> Moon Phase</h3>
+              <div id="moon-phase-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="best-time-card">
+              <h3><i class="fas fa-clock"></i> Best Time Today</h3>
+              <div id="best-time-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="weather-stats-card">
+              <h3><i class="fas fa-chart-bar"></i> Today's Statistics</h3>
+              <div id="weather-stats-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="wind-compass-card">
+              <h3><i class="fas fa-compass"></i> Wind Direction</h3>
+              <div id="wind-compass-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="precipitation-card">
+              <h3><i class="fas fa-cloud-rain"></i> Rain Probability</h3>
+              <div id="precipitation-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="pressure-trend-card">
+              <h3><i class="fas fa-arrow-trend-up"></i> Pressure Trend</h3>
+              <div id="pressure-trend-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+
+            <div class="insight-card" id="activity-card">
+              <h3><i class="fas fa-running"></i> Activity Guide</h3>
+              <div id="activity-content">
+                <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="extreme-weather-section">
+          <h2><i class="fas fa-exclamation-triangle"></i> Weather Extremes & Warnings</h2>
+          <div class="extremes-container" id="extremes-container">
+            <p style="text-align: center; color: var(--secondary-color); padding: 20px;">Loading...</p>
+          </div>
+        </section>
+
+        <section class="ai-analysis">
+          <h2><i class="fas fa-brain"></i> AI Weather Analysis & Suggestions</h2>
+          <div class="ai-card" id="ai-analysis-content">
+            <div class="ai-loading">
+              <div class="ai-loader"></div>
+              <p>Analyzing weather patterns...</p>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2><i class="fas fa-cog"></i> Settings</h2>
+              <button class="close-btn" id="close-settings">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="setting-group">
+                <h3>Temperature Unit</h3>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="temp-unit" value="metric" checked />
+                    <span>Celsius (°C)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="temp-unit" value="imperial" />
+                    <span>Fahrenheit (°F)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="temp-unit" value="kelvin" />
+                    <span>Kelvin (K)</span>
                   </label>
                 </div>
               </div>
+              <div class="setting-group">
+                <h3>Wind Speed Unit</h3>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="wind-unit" value="kmh" checked />
+                    <span>km/h</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="wind-unit" value="mph" />
+                    <span>mph</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="wind-unit" value="ms" />
+                    <span>m/s</span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting-group">
+                <h3>Pressure Unit</h3>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="pressure-unit" value="hpa" checked />
+                    <span>hPa</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="pressure-unit" value="inhg" />
+                    <span>inHg</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="pressure-unit" value="mmhg" />
+                    <span>mmHg</span>
+                  </label>
+                </div>
+              </div>
+              <div class="setting-group">
+                <h3>Notifications</h3>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="enable-notifications" />
+                  <span>Enable weather alerts</span>
+                </label>
+              </div>
             </div>
           </div>
-        </main>
+        </div>
+      </main>
 
-        <footer>
-          <p>© Taafeef Bin Montaquim || All Rights Reserved</p>
-          <p>
-            Check out my other websites:
-            <br />
-            <a href="https://typemaster-ai.netlify.app/" target="_blank">Type Master Pro</a>
-            |
-            <a href="https://taskschedulepro.netlify.app/" target="_blank">Task Schedule Pro</a>
-          </p>
-        </footer>
-      </div>
-      <script src="script.js"></script>
+      <footer>
+        <p>© Taafeef Bin Montaquim || All Rights Reserved</p>
+        <p>
+          Check out my other websites:
+          <br />
+          <a href="https://typemaster-ai.netlify.app/" target="_blank">Type Master Pro</a>
+          |
+          <a href="https://taskschedulepro.netlify.app/" target="_blank">Task Schedule Pro</a>
+        </p>
+      </footer>
+  </div>
+  <script src="script.js"></script>
 </body>
 
 </html>
