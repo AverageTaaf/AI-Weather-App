@@ -827,6 +827,11 @@ document.addEventListener("DOMContentLoaded", function () {
     displayMoonPhase();
     displayBestTimes();
     displayWeatherStats();
+    displayWindCompass();
+    displayPrecipitation();
+    displayPressureTrend();
+    displayActivityRecommendations();
+    displayWeatherExtremes();
   }
 
   function displayFeelsLikeAnalysis() {
@@ -873,7 +878,9 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <div class="feels-like-item">
           <span class="feels-like-label">Difference</span>
-          <span class="feels-like-value" style="color: ${difference > 0 ? 'var(--danger-color)' : 'var(--primary-color)'}">
+          <span class="feels-like-value" style="color: ${
+            difference > 0 ? "var(--danger-color)" : "var(--primary-color)"
+          }">
             ${explanation}
           </span>
         </div>
@@ -960,7 +967,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "Full Moon": "Brightest night - great for night photography",
       "Waning Gibbous": "Still bright - visible late at night",
       "Last Quarter": "Half moon visible in morning sky",
-      "Waning Crescent": "Fading moon - darker nights coming"
+      "Waning Crescent": "Fading moon - darker nights coming",
     };
     return info[phaseName] || "Observe the moon tonight!";
   }
@@ -971,13 +978,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const sunrise = new Date(currentWeatherData.sys.sunrise * 1000);
     const sunset = new Date(currentWeatherData.sys.sunset * 1000);
-    
+
     // Find best times from hourly forecast
     const next24Hours = currentForecastData.list.slice(0, 8);
-    const temps = next24Hours.map(h => h.main.temp);
+    const temps = next24Hours.map((h) => h.main.temp);
     const minTemp = Math.min(...temps);
     const maxTemp = Math.max(...temps);
-    
+
     const warmestHour = next24Hours[temps.indexOf(maxTemp)];
     const coolestHour = next24Hours[temps.indexOf(minTemp)];
 
@@ -987,7 +994,11 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fas fa-sunrise"></i>
           <div class="time-info">
             <div class="time-label">Sunrise</div>
-            <div class="time-value">${sunrise.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</div>
+            <div class="time-value">${sunrise.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })}</div>
           </div>
         </div>
         
@@ -995,7 +1006,11 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fas fa-sunset"></i>
           <div class="time-info">
             <div class="time-label">Sunset</div>
-            <div class="time-value">${sunset.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</div>
+            <div class="time-value">${sunset.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            })}</div>
           </div>
         </div>
         
@@ -1003,7 +1018,12 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fas fa-temperature-high"></i>
           <div class="time-info">
             <div class="time-label">Warmest Time</div>
-            <div class="time-value">${new Date(warmestHour.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })} - ${formatTemperature(maxTemp)}</div>
+            <div class="time-value">${new Date(
+              warmestHour.dt * 1000
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              hour12: true,
+            })} - ${formatTemperature(maxTemp)}</div>
           </div>
         </div>
         
@@ -1011,7 +1031,12 @@ document.addEventListener("DOMContentLoaded", function () {
           <i class="fas fa-temperature-low"></i>
           <div class="time-info">
             <div class="time-label">Coolest Time</div>
-            <div class="time-value">${new Date(coolestHour.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })} - ${formatTemperature(minTemp)}</div>
+            <div class="time-value">${new Date(
+              coolestHour.dt * 1000
+            ).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              hour12: true,
+            })} - ${formatTemperature(minTemp)}</div>
           </div>
         </div>
       </div>
@@ -1022,14 +1047,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const statsContent = document.getElementById("weather-stats-content");
     if (!statsContent || !currentWeatherData || !currentForecastData) return;
 
-    const daylight = currentWeatherData.sys.sunset - currentWeatherData.sys.sunrise;
+    const daylight =
+      currentWeatherData.sys.sunset - currentWeatherData.sys.sunrise;
     const daylightHours = Math.floor(daylight / 3600);
     const daylightMinutes = Math.floor((daylight % 3600) / 60);
 
     // Calculate average from forecast
     const next24Hours = currentForecastData.list.slice(0, 8);
-    const avgTemp = next24Hours.reduce((sum, h) => sum + h.main.temp, 0) / next24Hours.length;
-    const avgHumidity = next24Hours.reduce((sum, h) => sum + h.main.humidity, 0) / next24Hours.length;
+    const avgTemp =
+      next24Hours.reduce((sum, h) => sum + h.main.temp, 0) / next24Hours.length;
+    const avgHumidity =
+      next24Hours.reduce((sum, h) => sum + h.main.humidity, 0) /
+      next24Hours.length;
 
     statsContent.innerHTML = `
       <div class="weather-stat-item">
@@ -1057,9 +1086,401 @@ document.addEventListener("DOMContentLoaded", function () {
         <span class="stat-label">
           <i class="fas fa-eye"></i> Visibility
         </span>
-        <span class="stat-value">${(currentWeatherData.visibility / 1000).toFixed(1)} km</span>
+        <span class="stat-value">${(
+          currentWeatherData.visibility / 1000
+        ).toFixed(1)} km</span>
       </div>
     `;
+  }
+
+  function displayWindCompass() {
+    const windCompassContent = document.getElementById("wind-compass-content");
+    if (!windCompassContent || !currentWeatherData) return;
+
+    const windDeg = currentWeatherData.wind.deg || 0;
+    const windSpeed = currentWeatherData.wind.speed * 3.6;
+
+    // Get cardinal direction
+    const directions = [
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW",
+    ];
+    const index = Math.round(windDeg / 22.5) % 16;
+    const direction = directions[index];
+
+    // Wind description
+    let description = "";
+    if (windSpeed < 5) description = "Calm";
+    else if (windSpeed < 20) description = "Light breeze";
+    else if (windSpeed < 40) description = "Moderate wind";
+    else if (windSpeed < 60) description = "Strong wind";
+    else description = "Very strong wind";
+
+    windCompassContent.innerHTML = `
+      <div class="wind-compass">
+        <div class="compass-circle">
+          <div class="compass-directions">
+            <span class="compass-direction north">N</span>
+            <span class="compass-direction east">E</span>
+            <span class="compass-direction south">S</span>
+            <span class="compass-direction west">W</span>
+          </div>
+          <div class="compass-arrow" style="transform: translate(-50%, -50%) rotate(${windDeg}deg);">
+            ↑
+          </div>
+        </div>
+        <div class="wind-speed-display">${formatWindSpeed(
+          currentWeatherData.wind.speed
+        )}</div>
+        <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-color); margin-top: 5px;">
+          ${direction} (${windDeg}°)
+        </div>
+        <div class="wind-description">${description}</div>
+      </div>
+    `;
+  }
+
+  function displayPrecipitation() {
+    const precipContent = document.getElementById("precipitation-content");
+    if (!precipContent || !currentForecastData) return;
+
+    const next8Hours = currentForecastData.list.slice(0, 8);
+
+    precipContent.innerHTML = `
+      <div class="precipitation-bars">
+        ${next8Hours
+          .map((hour, index) => {
+            const pop = (hour.pop * 100).toFixed(0);
+            const time = new Date(hour.dt * 1000).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              hour12: true,
+            });
+            const height = Math.max(pop, 5); // Minimum 5% for visibility
+
+            return `
+            <div class="precip-bar" style="height: ${height}%;" title="${pop}% chance at ${time}">
+              <span class="precip-value">${pop}%</span>
+              <span class="precip-label">${time}</span>
+            </div>
+          `;
+          })
+          .join("")}
+      </div>
+      <div style="margin-top: 40px; padding: 10px; background: var(--bg-color); border-radius: 8px; text-align: center;">
+        <small style="color: var(--secondary-color);">
+          <i class="fas fa-info-circle"></i> Probability of precipitation over next 24 hours
+        </small>
+      </div>
+    `;
+  }
+
+  function displayPressureTrend() {
+    const pressureContent = document.getElementById("pressure-trend-content");
+    if (!pressureContent || !currentWeatherData || !currentForecastData) return;
+
+    const currentPressure = currentWeatherData.main.pressure;
+    const futurePressure = currentForecastData.list[2].main.pressure; // 6 hours ahead
+    const pressureDiff = futurePressure - currentPressure;
+
+    let trend, trendClass, forecast;
+    if (pressureDiff > 2) {
+      trend = "Rising";
+      trendClass = "rising";
+      forecast = "Improving weather expected";
+    } else if (pressureDiff < -2) {
+      trend = "Falling";
+      trendClass = "falling";
+      forecast = "Weather may deteriorate";
+    } else {
+      trend = "Steady";
+      trendClass = "steady";
+      forecast = "Stable weather conditions";
+    }
+
+    const icon =
+      trend === "Rising"
+        ? "fa-arrow-up"
+        : trend === "Falling"
+        ? "fa-arrow-down"
+        : "fa-equals";
+
+    pressureContent.innerHTML = `
+      <div class="pressure-display">
+        <div class="pressure-value">${formatPressure(currentPressure)}</div>
+        <div class="pressure-trend-indicator ${trendClass}">
+          <i class="fas ${icon}"></i>
+          <span>${trend}</span>
+        </div>
+        <div class="pressure-forecast">
+          <i class="fas fa-info-circle"></i> ${forecast}
+        </div>
+        <div style="margin-top: 15px; font-size: 0.85rem; color: var(--secondary-color);">
+          ${pressureDiff > 0 ? "+" : ""}${pressureDiff.toFixed(
+      1
+    )} hPa in next 6 hours
+        </div>
+      </div>
+    `;
+  }
+
+  function displayActivityRecommendations() {
+    const activityContent = document.getElementById("activity-content");
+    if (!activityContent || !currentWeatherData) return;
+
+    const temp = currentWeatherData.main.temp;
+    const windSpeed = currentWeatherData.wind.speed * 3.6;
+    const humidity = currentWeatherData.main.humidity;
+    const weatherId = currentWeatherData.weather[0].id;
+    const isRaining = weatherId >= 500 && weatherId < 600;
+    const isClear = weatherId === 800;
+
+    const activities = [
+      {
+        name: "Running",
+        icon: "fa-running",
+        score: calculateActivityScore(
+          temp,
+          15,
+          25,
+          windSpeed,
+          30,
+          humidity,
+          70,
+          !isRaining
+        ),
+      },
+      {
+        name: "Cycling",
+        icon: "fa-bicycle",
+        score: calculateActivityScore(
+          temp,
+          10,
+          28,
+          windSpeed,
+          25,
+          humidity,
+          75,
+          !isRaining
+        ),
+      },
+      {
+        name: "Hiking",
+        icon: "fa-hiking",
+        score: calculateActivityScore(
+          temp,
+          12,
+          26,
+          windSpeed,
+          35,
+          humidity,
+          80,
+          !isRaining
+        ),
+      },
+      {
+        name: "Photography",
+        icon: "fa-camera",
+        score: calculateActivityScore(
+          temp,
+          5,
+          30,
+          windSpeed,
+          40,
+          humidity,
+          90,
+          isClear
+        ),
+      },
+    ];
+
+    activityContent.innerHTML = `
+      <div class="activity-list">
+        ${activities
+          .map((activity) => {
+            const { status, statusClass } = getActivityStatus(activity.score);
+            return `
+            <div class="activity-item">
+              <div class="activity-icon">
+                <i class="fas ${activity.icon}"></i>
+              </div>
+              <div class="activity-info">
+                <div class="activity-name">${activity.name}</div>
+                <div class="activity-rating">${activity.score}% ideal</div>
+              </div>
+              <span class="activity-status ${statusClass}">${status}</span>
+            </div>
+          `;
+          })
+          .join("")}
+      </div>
+    `;
+  }
+
+  function calculateActivityScore(
+    temp,
+    minTemp,
+    maxTemp,
+    windSpeed,
+    maxWind,
+    humidity,
+    maxHumidity,
+    weatherGood
+  ) {
+    let score = 100;
+
+    // Temperature penalty
+    if (temp < minTemp) score -= (minTemp - temp) * 3;
+    if (temp > maxTemp) score -= (temp - maxTemp) * 3;
+
+    // Wind penalty
+    if (windSpeed > maxWind) score -= (windSpeed - maxWind) * 2;
+
+    // Humidity penalty
+    if (humidity > maxHumidity) score -= (humidity - maxHumidity) * 0.5;
+
+    // Weather penalty
+    if (!weatherGood) score -= 30;
+
+    return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
+  function getActivityStatus(score) {
+    if (score >= 80) return { status: "Excellent", statusClass: "excellent" };
+    if (score >= 60) return { status: "Good", statusClass: "good" };
+    if (score >= 40) return { status: "Fair", statusClass: "fair" };
+    return { status: "Poor", statusClass: "poor" };
+  }
+
+  function displayWeatherExtremes() {
+    const extremesContainer = document.getElementById("extremes-container");
+    if (!extremesContainer || !currentWeatherData || !currentForecastData)
+      return;
+
+    const temp = currentWeatherData.main.temp;
+    const windSpeed = currentWeatherData.wind.speed * 3.6;
+    const humidity = currentWeatherData.main.humidity;
+    const pressure = currentWeatherData.main.pressure;
+
+    // Get forecast extremes
+    const next24Hours = currentForecastData.list.slice(0, 8);
+    const temps = next24Hours.map((h) => h.main.temp);
+    const maxTemp = Math.max(...temps);
+    const minTemp = Math.min(...temps);
+
+    const extremes = [];
+
+    // Temperature extremes
+    if (settings.tempUnit === "metric") {
+      if (temp > 35) {
+        extremes.push({
+          type: "hot",
+          icon: "fa-temperature-high",
+          title: "Extreme Heat",
+          value: formatTemperature(temp),
+          description:
+            "Dangerously hot! Stay hydrated and avoid prolonged sun exposure.",
+        });
+      } else if (temp < 0) {
+        extremes.push({
+          type: "cold",
+          icon: "fa-temperature-low",
+          title: "Freezing Cold",
+          value: formatTemperature(temp),
+          description: "Below freezing! Dress warmly and watch for ice.",
+        });
+      }
+    }
+
+    // Wind extremes
+    if (windSpeed > 50) {
+      extremes.push({
+        type: "windy",
+        icon: "fa-wind",
+        title: "Strong Winds",
+        value: formatWindSpeed(currentWeatherData.wind.speed),
+        description:
+          "High wind warning! Secure loose objects and be cautious outdoors.",
+      });
+    }
+
+    // Humidity extremes
+    if (humidity > 85) {
+      extremes.push({
+        type: "humid",
+        icon: "fa-droplet",
+        title: "High Humidity",
+        value: `${humidity}%`,
+        description:
+          "Very humid conditions. It may feel much hotter than actual temperature.",
+      });
+    } else if (humidity < 20) {
+      extremes.push({
+        type: "humid",
+        icon: "fa-droplet-slash",
+        title: "Low Humidity",
+        value: `${humidity}%`,
+        description:
+          "Very dry air. Stay moisturized and drink plenty of water.",
+      });
+    }
+
+    // Temperature range
+    const tempRange = maxTemp - minTemp;
+    if (tempRange > 15) {
+      extremes.push({
+        type: "hot",
+        icon: "fa-arrows-up-down",
+        title: "Large Temperature Swing",
+        value: `${tempRange.toFixed(1)}°`,
+        description:
+          "Significant temperature variation expected today. Dress in layers.",
+      });
+    }
+
+    if (extremes.length === 0) {
+      extremesContainer.innerHTML = `
+        <div style="text-align: center; padding: 30px; color: var(--success-color);">
+          <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <h3>No Extreme Weather</h3>
+          <p style="color: var(--secondary-color); margin-top: 10px;">
+            Weather conditions are within normal ranges. Enjoy your day!
+          </p>
+        </div>
+      `;
+    } else {
+      extremesContainer.innerHTML = `
+        <div class="extremes-grid">
+          ${extremes
+            .map(
+              (extreme) => `
+            <div class="extreme-card ${extreme.type}">
+              <div class="extreme-header">
+                <i class="fas ${extreme.icon} extreme-icon"></i>
+                <span class="extreme-title">${extreme.title}</span>
+              </div>
+              <div class="extreme-value">${extreme.value}</div>
+              <div class="extreme-description">${extreme.description}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      `;
+    }
   }
 
   function showLoading() {
