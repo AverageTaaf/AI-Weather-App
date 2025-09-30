@@ -698,6 +698,151 @@ h2 {
     max-height: 100%;
 }
 
+/* Weather Insights Section */
+.weather-insights-section {
+    margin: 30px auto;
+    max-width: 1200px;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.insight-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+.insight-card h3 {
+    font-size: 1rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feels-like-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feels-like-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-color);
+    border-radius: 8px;
+}
+
+.feels-like-label {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.feels-like-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.moon-phase-display {
+    text-align: center;
+    padding: 20px;
+}
+
+.moon-icon {
+    font-size: 4rem;
+    margin: 15px 0;
+}
+
+.moon-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 10px 0;
+}
+
+.moon-illumination {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.best-time-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.time-recommendation {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-color);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.time-recommendation i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.time-recommendation .time-info {
+    flex: 1;
+}
+
+.time-recommendation .time-label {
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.time-recommendation .time-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.weather-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: var(--bg-color);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
 /* Weather Comparison Section */
 .weather-comparison-section {
     margin: 30px auto;
@@ -1355,6 +1500,10 @@ footer {
     }
 
     .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .insights-grid {
         grid-template-columns: 1fr;
     }
 }
