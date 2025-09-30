@@ -416,20 +416,44 @@
             <div class="forecast-container" id="forecast-container"></div>
           </section>
 
-          <section class="weather-insights-section">
-            <h2><i class="fas fa-chart-bar"></i> Weather Insights & Trends</h2>
-            <div class="insights-container" id="weather-insights">
-              <p style="text-align: center; color: var(--secondary-color); padding: 20px;">
-                <i class="fas fa-spinner fa-spin"></i> Analyzing weather patterns...
-              </p>
-            </div>
-          </section>
-
           <section class="hourly-forecast-section">
             <h2><i class="fas fa-clock"></i> 24-Hour Forecast</h2>
             <div class="hourly-forecast-container" id="hourly-forecast-container"></div>
             <div class="chart-container">
               <canvas id="temp-chart"></canvas>
+            </div>
+          </section>
+
+          <section class="weather-insights-section">
+            <h2><i class="fas fa-lightbulb"></i> Weather Insights</h2>
+            <div class="insights-grid">
+              <div class="insight-card" id="feels-like-card">
+                <h3><i class="fas fa-temperature-half"></i> Feels Like Analysis</h3>
+                <div id="feels-like-content">
+                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+                </div>
+              </div>
+              
+              <div class="insight-card" id="moon-phase-card">
+                <h3><i class="fas fa-moon"></i> Moon Phase</h3>
+                <div id="moon-phase-content">
+                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+                </div>
+              </div>
+              
+              <div class="insight-card" id="best-time-card">
+                <h3><i class="fas fa-clock"></i> Best Time Today</h3>
+                <div id="best-time-content">
+                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+                </div>
+              </div>
+              
+              <div class="insight-card" id="weather-stats-card">
+                <h3><i class="fas fa-chart-bar"></i> Today's Statistics</h3>
+                <div id="weather-stats-content">
+                  <p style="text-align: center; color: var(--secondary-color);">Loading...</p>
+                </div>
+              </div>
             </div>
           </section>
 
