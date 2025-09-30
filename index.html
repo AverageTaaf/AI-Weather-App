@@ -8,8 +8,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -61,7 +63,10 @@
         <section class="search-section">
           <div class="search-container">
             <div class="search-input-group">
-              <input type="text" id="location-input" placeholder="Enter city or zip code..." />
+              <div class="search-autocomplete-wrapper">
+                <input type="text" id="location-input" placeholder="Enter city or zip code..." autocomplete="off" />
+                <div class="autocomplete-dropdown" id="autocomplete-dropdown"></div>
+              </div>
               <button id="search-btn">
                 <i class="fas fa-search"></i> Search
               </button>
@@ -419,9 +424,25 @@
         <section class="hourly-forecast-section">
           <h2><i class="fas fa-clock"></i> 24-Hour Forecast</h2>
           <div class="hourly-forecast-container" id="hourly-forecast-container"></div>
-          <div class="chart-container">
-            <canvas id="temp-chart"></canvas>
+          <div class="charts-grid">
+            <div class="chart-container">
+              <h3><i class="fas fa-temperature-half"></i> Temperature Trend</h3>
+              <canvas id="temp-chart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3><i class="fas fa-tint"></i> Humidity Trend</h3>
+              <canvas id="humidity-chart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3><i class="fas fa-wind"></i> Wind Speed Trend</h3>
+              <canvas id="wind-chart"></canvas>
+            </div>
           </div>
+        </section>
+
+        <section class="location-map-section">
+          <h2><i class="fas fa-map-marked-alt"></i> Location Map</h2>
+          <div id="location-map" class="location-map"></div>
         </section>
 
         <section class="weather-insights-section">
