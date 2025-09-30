@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Opera GX detected - applying compatibility fixes");
   }
 
-  // Configuration
+  // ConfigurationA
   const API_KEY = "51ec62d7c829a2af2bcabd204c07f8df";
   const GEOLOCATION_TIMEOUT = 10000;
 
@@ -54,6 +54,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const settingsBtn = document.getElementById("settings-btn");
   const settingsModal = document.getElementById("settings-modal");
   const closeSettingsBtn = document.getElementById("close-settings");
+  const autocompleteDropdown = document.getElementById("autocomplete-dropdown");
+
+  // Map variable
+  let map = null;
+  let marker = null;
+  let areaCircle = null;
   const addLocationBtn = document.getElementById("add-location-btn");
   const savedLocationsList = document.getElementById("saved-locations-list");
 
@@ -280,25 +286,101 @@ document.addEventListener("DOMContentLoaded", function () {
     if (weatherId >= 500 && weatherId < 600) return "fa-umbrella";
     if (weatherId >= 600 && weatherId < 700) return "fa-snowflake";
     if (weatherId >= 700 && weatherId < 800) return "fa-smog";
-    if (weatherId === 800) return "fa-sun";
-    if (weatherId > 800) return "fa-cloud";
-    return "fa-question";
   }
 
-  // Search functionality
-  searchBtn.addEventListener("click", function () {
-    fetchWeatherData();
+  // Search Autocomplete
+  let autocompleteTimeout;
+  locationInput.addEventListener("input", (e) => {
+    const query = e.target.value.trim();
+
+    clearTimeout(autocompleteTimeout);
+
+    if (query.length < 2) {
+      autocompleteDropdown.classList.remove("active");
+      return;
+    }
+
+    autocompleteTimeout = setTimeout(() => {
+      fetchCitySuggestions(query);
+    }, 300);
   });
 
-  locationInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      fetchWeatherData();
+  // Close autocomplete when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".search-autocomplete-wrapper")) {
+      autocompleteDropdown.classList.remove("active");
     }
   });
 
-  if (currentLocationBtn) {
-    currentLocationBtn.addEventListener("click", getUserLocation);
+  async function fetchCitySuggestions(query) {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
+          query
+        )}&limit=5&appid=${API_KEY}`
+      );
+      const cities = await response.json();
+
+      if (cities.length > 0) {
+        displayAutocomplete(cities);
+      } else {
+        autocompleteDropdown.classList.remove("active");
+      }
+    } catch (error) {
+      console.error("Autocomplete error:", error);
+    }
   }
+
+  function displayAutocomplete(cities) {
+    autocompleteDropdown.innerHTML = cities
+      .map(
+        (city) => `
+        <div class="autocomplete-item" data-city="${city.name}" data-lat="${
+          city.lat
+        }" data-lon="${city.lon}">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <span class="autocomplete-city">${city.name}</span>
+            <span class="autocomplete-country">${city.country}${
+          city.state ? ", " + city.state : ""
+        }</span>
+          </div>
+        </div>
+      `
+      )
+      .join("");
+
+    autocompleteDropdown.classList.add("active");
+
+    // Add click handlers
+    document.querySelectorAll(".autocomplete-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const cityName = item.dataset.city;
+        locationInput.value = cityName;
+        autocompleteDropdown.classList.remove("active");
+        fetchWeatherData(cityName);
+      });
+    });
+  }
+
+  // Search functionality
+  searchBtn.addEventListener("click", () => {
+    const location = locationInput.value.trim();
+    if (location) {
+      autocompleteDropdown.classList.remove("active");
+      fetchWeatherData(location);
+    }
+  });
+
+  locationInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      const location = locationInput.value.trim();
+      if (location) {
+        autocompleteDropdown.classList.remove("active");
+        fetchWeatherData(location);
+      }
+    }
+  });
 
   document
     .getElementById("capital-cities")
@@ -476,6 +558,10 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error(data.message);
       })
       .then(() => {
+        // Initialize map with current location
+        if (currentCoords) {
+          initializeMap(currentCoords.lat, currentCoords.lon, currentLocation);
+        }
         displayWeatherInsights();
         generateAIAnalysis();
       })
@@ -580,6 +666,10 @@ document.addEventListener("DOMContentLoaded", function () {
         ]);
       })
       .then(() => {
+        // Initialize map with current location
+        if (currentCoords) {
+          initializeMap(currentCoords.lat, currentCoords.lon, currentLocation);
+        }
         displayWeatherInsights();
         generateAIAnalysis();
       })
@@ -712,34 +802,38 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     `;
   }
-
   // NEW: Display Hourly Forecast
   function displayHourlyForecast(data) {
     if (!hourlyForecastContainer) return;
 
-    const next24Hours = data.list.slice(0, 8); // 8 * 3 hours = 24 hours
+    hourlyForecastContainer.innerHTML = "";
+    const hourlyData = data.list.slice(0, 8);
 
-    hourlyForecastContainer.innerHTML = next24Hours
-      .map((hour) => {
-        const time = new Date(hour.dt * 1000);
-        const timeStr = time.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          hour12: true,
-        });
+    // Create additional charts
+    createHumidityChart(hourlyData);
+    createWindChart(hourlyData);
 
-        return `
-        <div class="hourly-card">
-          <div class="hourly-time">${timeStr}</div>
-          <i class="fas ${getWeatherIcon(hour.weather[0].id)}"></i>
-          <div class="hourly-temp">${formatTemperature(hour.main.temp)}</div>
-          <div class="hourly-pop">${Math.round(hour.pop * 100)}%</div>
-        </div>
+    hourlyData.forEach((hour) => {
+      const hourlyCard = document.createElement("div");
+      hourlyCard.className = "hourly-card";
+
+      const timeStr = new Date(hour.dt * 1000).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      });
+
+      hourlyCard.innerHTML = `
+        <div class="hourly-time">${timeStr}</div>
+        <i class="fas ${getWeatherIcon(hour.weather[0].id)}"></i>
+        <div class="hourly-temp">${formatTemperature(hour.main.temp)}</div>
+        <div class="hourly-pop">${Math.round(hour.pop * 100)}%</div>
       `;
-      })
-      .join("");
+
+      hourlyForecastContainer.appendChild(hourlyCard);
+    });
 
     // Create temperature chart with proper unit label
-    createTemperatureChart(next24Hours);
+    createTemperatureChart(data.list.slice(0, 24));
   }
 
   function createTemperatureChart(hourlyData) {
@@ -811,6 +905,338 @@ document.addEventListener("DOMContentLoaded", function () {
             ticks: {
               callback: function (value) {
                 return value.toFixed(0) + unitLabel;
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Initialize Map with Weather Overlay
+  function initializeMap(lat, lon, locationName) {
+    console.log("🗺️ Initializing map for:", locationName, "at", lat, lon);
+
+    const mapContainer = document.getElementById("location-map");
+    if (!mapContainer) {
+      console.error("❌ Map container #location-map not found in DOM!");
+      return;
+    }
+
+    console.log("✅ Map container found:", mapContainer);
+    console.log(
+      "📏 Container dimensions:",
+      mapContainer.offsetWidth,
+      "x",
+      mapContainer.offsetHeight
+    );
+
+    // Wait for Leaflet to be loaded
+    if (typeof L === "undefined") {
+      console.warn("⏳ Leaflet library not loaded yet. Retrying in 500ms...");
+
+      // Show loading state only if Leaflet isn't loaded
+      mapContainer.style.display = "block";
+      mapContainer.style.height = "450px";
+      mapContainer.style.background = "var(--card-bg)";
+      mapContainer.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; background: var(--card-bg); border-radius: 12px; border: 2px solid var(--primary-color);">
+          <div style="text-align: center; color: var(--text-color); padding: 40px;">
+            <i class="fas fa-map-marked-alt" style="font-size: 3rem; margin-bottom: 10px; color: var(--primary-color);"></i>
+            <p style="font-size: 1.1rem; margin: 10px 0; font-weight: 600;">Initializing map...</p>
+            <div style="width: 40px; height: 40px; border: 4px solid var(--primary-color); border-top-color: transparent; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite;"></div>
+            <p style="font-size: 0.9rem; color: var(--secondary-color); margin-top: 10px;">Loading Leaflet.js...</p>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => initializeMap(lat, lon, locationName), 500);
+      return;
+    }
+
+    console.log("✅ Leaflet.js loaded successfully");
+
+    // Initialize map if not already done
+    if (!map) {
+      // Clear loading state only when creating new map
+      mapContainer.innerHTML = "";
+      mapContainer.style.border = "none";
+
+      try {
+        map = L.map("location-map", {
+          center: [lat, lon],
+          zoom: 11,
+          zoomControl: true,
+          scrollWheelZoom: true,
+        });
+
+        // Add base tile layer
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom: 18,
+        }).addTo(map);
+
+        // Add weather overlay (clouds)
+        L.tileLayer(
+          `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+          {
+            attribution: "Weather data &copy; OpenWeatherMap",
+            opacity: 0.5,
+            maxZoom: 18,
+          }
+        ).addTo(map);
+
+        // Add precipitation overlay
+        L.tileLayer(
+          `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+          {
+            attribution: "Weather data &copy; OpenWeatherMap",
+            opacity: 0.6,
+            maxZoom: 18,
+          }
+        ).addTo(map);
+      } catch (error) {
+        console.error("Error initializing map:", error);
+        mapContainer.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger-color);">
+            <div style="text-align: center;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 10px;"></i>
+              <p>Map failed to load</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    } else {
+      // Update existing map
+      console.log("📍 Updating map to new location:", lat, lon);
+      map.setView([lat, lon], 11);
+    }
+
+    // Remove old marker if exists
+    if (marker) {
+      console.log("🗑️ Removing old marker");
+      map.removeLayer(marker);
+    }
+
+    // Remove old circle if exists
+    if (areaCircle) {
+      console.log("🗑️ Removing old circle");
+      map.removeLayer(areaCircle);
+    }
+
+    // Create custom icon
+    const weatherIcon = L.divIcon({
+      className: "custom-map-marker",
+      html: `
+        <div style="
+          background: var(--primary-color);
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+          border: 3px solid white;
+        ">
+          <i class="fas fa-map-marker-alt" style="transform: rotate(45deg); font-size: 20px;"></i>
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
+
+    // Add new marker with custom icon
+    marker = L.marker([lat, lon], { icon: weatherIcon }).addTo(map);
+
+    // Create detailed popup
+    const popupContent = `
+      <div style="min-width: 200px; font-family: 'Poppins', sans-serif;">
+        <h3 style="margin: 0 0 10px 0; color: var(--primary-color); font-size: 1.1rem;">
+          <i class="fas fa-location-dot"></i> ${locationName}
+        </h3>
+        ${
+          currentWeatherData
+            ? `
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <i class="fas ${getWeatherIcon(
+              currentWeatherData.weather[0].id
+            )}" style="font-size: 2rem; color: var(--accent-color);"></i>
+            <div>
+              <div style="font-size: 1.5rem; font-weight: bold;">${formatTemperature(
+                currentWeatherData.main.temp
+              )}</div>
+              <div style="font-size: 0.85rem; color: var(--secondary-color); text-transform: capitalize;">${
+                currentWeatherData.weather[0].description
+              }</div>
+            </div>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-color); margin-top: 8px;">
+            <div style="display: flex; justify-content: space-between; margin: 4px 0;">
+              <span><i class="fas fa-wind"></i> Wind:</span>
+              <span>${formatWindSpeed(currentWeatherData.wind.speed)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin: 4px 0;">
+              <span><i class="fas fa-tint"></i> Humidity:</span>
+              <span>${currentWeatherData.main.humidity}%</span>
+            </div>
+          </div>
+        `
+            : '<p style="color: var(--secondary-color);">Loading weather data...</p>'
+        }
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--secondary-color);">
+          Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}
+        </div>
+      </div>
+    `;
+
+    marker
+      .bindPopup(popupContent, {
+        maxWidth: 300,
+        className: "custom-popup",
+      })
+      .openPopup();
+
+    // Add circle to show area
+    areaCircle = L.circle([lat, lon], {
+      color: "#3b82f6",
+      fillColor: "#3b82f6",
+      fillOpacity: 0.1,
+      radius: 5000, // 5km radius
+    }).addTo(map);
+
+    console.log("✅ Map updated successfully for:", locationName);
+
+    // Invalidate size to fix rendering issues
+    setTimeout(() => {
+      if (map) {
+        map.invalidateSize();
+      }
+    }, 100);
+  }
+
+  // Create Humidity Chart
+  function createHumidityChart(hourlyData) {
+    const canvas = document.getElementById("humidity-chart");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    const ctx = canvas.getContext("2d");
+    const labels = hourlyData.map((h) =>
+      new Date(h.dt * 1000).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      })
+    );
+    const humidity = hourlyData.map((h) => h.main.humidity);
+
+    if (window.humidityChart) {
+      window.humidityChart.destroy();
+    }
+
+    window.humidityChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Humidity (%)",
+            data: humidity,
+            borderColor: "rgb(59, 130, 246)",
+            backgroundColor: "rgba(59, 130, 246, 0.1)",
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `${context.parsed.y}%`;
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            max: 100,
+            ticks: {
+              callback: function (value) {
+                return value + "%";
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // Create Wind Chart
+  function createWindChart(hourlyData) {
+    const canvas = document.getElementById("wind-chart");
+    if (!canvas || typeof Chart === "undefined") return;
+
+    const ctx = canvas.getContext("2d");
+    const labels = hourlyData.map((h) =>
+      new Date(h.dt * 1000).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      })
+    );
+    const windSpeeds = hourlyData.map((h) => h.wind.speed * 3.6); // Convert to km/h
+
+    if (window.windChart) {
+      window.windChart.destroy();
+    }
+
+    window.windChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Wind Speed (km/h)",
+            data: windSpeeds,
+            borderColor: "rgb(16, 185, 129)",
+            backgroundColor: "rgba(16, 185, 129, 0.1)",
+            tension: 0.4,
+            fill: true,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `${context.parsed.y.toFixed(1)} km/h`;
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return value.toFixed(0) + " km/h";
               },
             },
           },
