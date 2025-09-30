@@ -476,6 +476,7 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error(data.message);
       })
       .then(() => {
+        displayWeatherInsights();
         generateAIAnalysis();
       })
       .catch((error) => {
@@ -579,6 +580,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ]);
       })
       .then(() => {
+        displayWeatherInsights();
         generateAIAnalysis();
       })
       .catch((error) => {
@@ -817,7 +819,248 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Historical data removed - free APIs have restrictive rate limits
+  // Weather Insights Features
+  function displayWeatherInsights() {
+    if (!currentWeatherData || !currentForecastData) return;
+
+    displayFeelsLikeAnalysis();
+    displayMoonPhase();
+    displayBestTimes();
+    displayWeatherStats();
+  }
+
+  function displayFeelsLikeAnalysis() {
+    const feelsLikeContent = document.getElementById("feels-like-content");
+    if (!feelsLikeContent || !currentWeatherData) return;
+
+    const actualTemp = currentWeatherData.main.temp;
+    const feelsLike = currentWeatherData.main.feels_like;
+    const humidity = currentWeatherData.main.humidity;
+    const windSpeed = currentWeatherData.wind.speed * 3.6;
+    const difference = feelsLike - actualTemp;
+
+    let explanation = "";
+    let factor = "";
+
+    if (Math.abs(difference) < 1) {
+      explanation = "Temperature feels accurate";
+      factor = "Comfortable conditions";
+    } else if (difference > 0) {
+      explanation = `Feels ${Math.abs(difference).toFixed(1)}° warmer`;
+      if (humidity > 60) {
+        factor = "High humidity makes it feel hotter";
+      } else {
+        factor = "Heat index effect";
+      }
+    } else {
+      explanation = `Feels ${Math.abs(difference).toFixed(1)}° cooler`;
+      if (windSpeed > 15) {
+        factor = "Wind chill makes it feel colder";
+      } else {
+        factor = "Low humidity effect";
+      }
+    }
+
+    feelsLikeContent.innerHTML = `
+      <div class="feels-like-breakdown">
+        <div class="feels-like-item">
+          <span class="feels-like-label">Actual Temperature</span>
+          <span class="feels-like-value">${formatTemperature(actualTemp)}</span>
+        </div>
+        <div class="feels-like-item">
+          <span class="feels-like-label">Feels Like</span>
+          <span class="feels-like-value">${formatTemperature(feelsLike)}</span>
+        </div>
+        <div class="feels-like-item">
+          <span class="feels-like-label">Difference</span>
+          <span class="feels-like-value" style="color: ${difference > 0 ? 'var(--danger-color)' : 'var(--primary-color)'}">
+            ${explanation}
+          </span>
+        </div>
+        <div style="padding: 10px; background: var(--bg-color); border-radius: 8px; margin-top: 5px;">
+          <small style="color: var(--secondary-color);">
+            <i class="fas fa-info-circle"></i> ${factor}
+          </small>
+        </div>
+      </div>
+    `;
+  }
+
+  function displayMoonPhase() {
+    const moonPhaseContent = document.getElementById("moon-phase-content");
+    if (!moonPhaseContent) return;
+
+    // Calculate moon phase based on current date
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const day = now.getDate();
+
+    // Simplified moon phase calculation
+    const c = (year - 1900) * 12.3685;
+    const e = (c + month - 0.5 + day / 30) % 29.53059;
+    const phase = e / 29.53059;
+
+    let moonName, moonEmoji, illumination;
+
+    if (phase < 0.0625 || phase >= 0.9375) {
+      moonName = "New Moon";
+      moonEmoji = "🌑";
+      illumination = "0%";
+    } else if (phase < 0.1875) {
+      moonName = "Waxing Crescent";
+      moonEmoji = "🌒";
+      illumination = "25%";
+    } else if (phase < 0.3125) {
+      moonName = "First Quarter";
+      moonEmoji = "🌓";
+      illumination = "50%";
+    } else if (phase < 0.4375) {
+      moonName = "Waxing Gibbous";
+      moonEmoji = "🌔";
+      illumination = "75%";
+    } else if (phase < 0.5625) {
+      moonName = "Full Moon";
+      moonEmoji = "🌕";
+      illumination = "100%";
+    } else if (phase < 0.6875) {
+      moonName = "Waning Gibbous";
+      moonEmoji = "🌖";
+      illumination = "75%";
+    } else if (phase < 0.8125) {
+      moonName = "Last Quarter";
+      moonEmoji = "🌗";
+      illumination = "50%";
+    } else {
+      moonName = "Waning Crescent";
+      moonEmoji = "🌘";
+      illumination = "25%";
+    }
+
+    moonPhaseContent.innerHTML = `
+      <div class="moon-phase-display">
+        <div class="moon-icon">${moonEmoji}</div>
+        <div class="moon-name">${moonName}</div>
+        <div class="moon-illumination">Illumination: ${illumination}</div>
+        <div style="margin-top: 15px; padding: 10px; background: var(--bg-color); border-radius: 8px;">
+          <small style="color: var(--secondary-color);">
+            ${getMoonPhaseInfo(moonName)}
+          </small>
+        </div>
+      </div>
+    `;
+  }
+
+  function getMoonPhaseInfo(phaseName) {
+    const info = {
+      "New Moon": "Perfect for stargazing - darkest night sky",
+      "Waxing Crescent": "Good time to start new projects",
+      "First Quarter": "Half moon visible in evening sky",
+      "Waxing Gibbous": "Almost full - bright nights ahead",
+      "Full Moon": "Brightest night - great for night photography",
+      "Waning Gibbous": "Still bright - visible late at night",
+      "Last Quarter": "Half moon visible in morning sky",
+      "Waning Crescent": "Fading moon - darker nights coming"
+    };
+    return info[phaseName] || "Observe the moon tonight!";
+  }
+
+  function displayBestTimes() {
+    const bestTimeContent = document.getElementById("best-time-content");
+    if (!bestTimeContent || !currentWeatherData || !currentForecastData) return;
+
+    const sunrise = new Date(currentWeatherData.sys.sunrise * 1000);
+    const sunset = new Date(currentWeatherData.sys.sunset * 1000);
+    
+    // Find best times from hourly forecast
+    const next24Hours = currentForecastData.list.slice(0, 8);
+    const temps = next24Hours.map(h => h.main.temp);
+    const minTemp = Math.min(...temps);
+    const maxTemp = Math.max(...temps);
+    
+    const warmestHour = next24Hours[temps.indexOf(maxTemp)];
+    const coolestHour = next24Hours[temps.indexOf(minTemp)];
+
+    bestTimeContent.innerHTML = `
+      <div class="best-time-list">
+        <div class="time-recommendation">
+          <i class="fas fa-sunrise"></i>
+          <div class="time-info">
+            <div class="time-label">Sunrise</div>
+            <div class="time-value">${sunrise.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</div>
+          </div>
+        </div>
+        
+        <div class="time-recommendation">
+          <i class="fas fa-sunset"></i>
+          <div class="time-info">
+            <div class="time-label">Sunset</div>
+            <div class="time-value">${sunset.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}</div>
+          </div>
+        </div>
+        
+        <div class="time-recommendation">
+          <i class="fas fa-temperature-high"></i>
+          <div class="time-info">
+            <div class="time-label">Warmest Time</div>
+            <div class="time-value">${new Date(warmestHour.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })} - ${formatTemperature(maxTemp)}</div>
+          </div>
+        </div>
+        
+        <div class="time-recommendation">
+          <i class="fas fa-temperature-low"></i>
+          <div class="time-info">
+            <div class="time-label">Coolest Time</div>
+            <div class="time-value">${new Date(coolestHour.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true })} - ${formatTemperature(minTemp)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function displayWeatherStats() {
+    const statsContent = document.getElementById("weather-stats-content");
+    if (!statsContent || !currentWeatherData || !currentForecastData) return;
+
+    const daylight = currentWeatherData.sys.sunset - currentWeatherData.sys.sunrise;
+    const daylightHours = Math.floor(daylight / 3600);
+    const daylightMinutes = Math.floor((daylight % 3600) / 60);
+
+    // Calculate average from forecast
+    const next24Hours = currentForecastData.list.slice(0, 8);
+    const avgTemp = next24Hours.reduce((sum, h) => sum + h.main.temp, 0) / next24Hours.length;
+    const avgHumidity = next24Hours.reduce((sum, h) => sum + h.main.humidity, 0) / next24Hours.length;
+
+    statsContent.innerHTML = `
+      <div class="weather-stat-item">
+        <span class="stat-label">
+          <i class="fas fa-sun"></i> Daylight Duration
+        </span>
+        <span class="stat-value">${daylightHours}h ${daylightMinutes}m</span>
+      </div>
+      
+      <div class="weather-stat-item">
+        <span class="stat-label">
+          <i class="fas fa-temperature-half"></i> 24h Avg Temp
+        </span>
+        <span class="stat-value">${formatTemperature(avgTemp)}</span>
+      </div>
+      
+      <div class="weather-stat-item">
+        <span class="stat-label">
+          <i class="fas fa-tint"></i> 24h Avg Humidity
+        </span>
+        <span class="stat-value">${Math.round(avgHumidity)}%</span>
+      </div>
+      
+      <div class="weather-stat-item">
+        <span class="stat-label">
+          <i class="fas fa-eye"></i> Visibility
+        </span>
+        <span class="stat-value">${(currentWeatherData.visibility / 1000).toFixed(1)} km</span>
+      </div>
+    `;
+  }
 
   function showLoading() {
     currentLocationEl.textContent = "Loading...";
@@ -1249,8 +1492,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Update saved locations display with new temperature format
     displaySavedLocations();
-    // Regenerate AI analysis with new units
+    // Update weather insights with new units
     if (currentWeatherData && currentForecastData) {
+      displayWeatherInsights();
       generateAIAnalysis();
     }
   }
