@@ -56,10 +56,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeSettingsBtn = document.getElementById("close-settings");
   const autocompleteDropdown = document.getElementById("autocomplete-dropdown");
 
-  // Map variable
+  // Map variables
   let map = null;
   let marker = null;
   let areaCircle = null;
+
+  // Weather layers map variables
+  let weatherLayersMap = null;
+  let currentWeatherLayer = null;
+  let activeLayerType = "clouds";
+  let activeLayers = [];
+  let layerOpacity = 0.6;
+  let animationInterval = null;
+  let isAnimating = false;
+  let multiLayerMode = false;
+
   const addLocationBtn = document.getElementById("add-location-btn");
   const savedLocationsList = document.getElementById("saved-locations-list");
 
@@ -118,6 +129,86 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setTheme(settings.theme);
+
+  // Weather Layers Map Controls
+  const layerButtons = document.querySelectorAll(".layer-btn");
+  const mobileLayerItems = document.querySelectorAll(".mobile-layer-item");
+  const mobileLayerBtn = document.getElementById("mobile-layer-btn");
+  const mobileLayerMenu = document.getElementById("mobile-layer-menu");
+  const opacitySlider = document.getElementById("layer-opacity");
+  const opacityValue = document.getElementById("opacity-value");
+  const toggleAnimationBtn = document.getElementById("toggle-animation");
+  const combineLayersBtn = document.getElementById("combine-layers");
+  const layerLoading = document.getElementById("layer-loading");
+
+  // Desktop layer buttons
+  layerButtons.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const layerType = this.getAttribute("data-layer");
+      handleLayerSelection(layerType);
+
+      if (!multiLayerMode) {
+        layerButtons.forEach((b) => b.classList.remove("active"));
+        this.classList.add("active");
+      } else {
+        this.classList.toggle("active");
+      }
+    });
+  });
+
+  // Mobile dropdown controls
+  if (mobileLayerBtn && mobileLayerMenu) {
+    mobileLayerBtn.addEventListener("click", () => {
+      mobileLayerMenu.classList.toggle("show");
+    });
+
+    mobileLayerItems.forEach((item) => {
+      item.addEventListener("click", function () {
+        const layerType = this.getAttribute("data-layer");
+        const layerName = this.textContent.trim();
+        const layerIcon = this.querySelector("i").className;
+
+        handleLayerSelection(layerType);
+
+        // Update mobile button display
+        mobileLayerBtn.querySelector("i").className = layerIcon;
+        mobileLayerBtn.querySelector("span").textContent = layerName;
+
+        // Update active state
+        mobileLayerItems.forEach((i) => i.classList.remove("active"));
+        this.classList.add("active");
+
+        // Close dropdown
+        mobileLayerMenu.classList.remove("show");
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".mobile-layer-selector")) {
+        mobileLayerMenu.classList.remove("show");
+      }
+    });
+  }
+
+  // Opacity control
+  if (opacitySlider && opacityValue) {
+    opacitySlider.addEventListener("input", function () {
+      layerOpacity = parseFloat(this.value);
+      opacityValue.textContent = Math.round(layerOpacity * 100) + "%";
+      updateLayerOpacity();
+    });
+  }
+
+  // Animation control
+  if (toggleAnimationBtn) {
+    toggleAnimationBtn.addEventListener("click", toggleAnimation);
+  }
+
+  // Multi-layer control
+  if (combineLayersBtn) {
+    combineLayersBtn.addEventListener("click", toggleMultiLayer);
+  }
 
   // Settings Modal
   if (settingsBtn) {
@@ -558,9 +649,10 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error(data.message);
       })
       .then(() => {
-        // Initialize map with current location
+        // Initialize maps with current location
         if (currentCoords) {
           initializeMap(currentCoords.lat, currentCoords.lon, currentLocation);
+          initializeWeatherLayersMap(currentCoords.lat, currentCoords.lon);
         }
         displayWeatherInsights();
         generateAIAnalysis();
@@ -666,9 +758,10 @@ document.addEventListener("DOMContentLoaded", function () {
         ]);
       })
       .then(() => {
-        // Initialize map with current location
+        // Initialize maps with current location
         if (currentCoords) {
           initializeMap(currentCoords.lat, currentCoords.lon, currentLocation);
+          initializeWeatherLayersMap(currentCoords.lat, currentCoords.lon);
         }
         displayWeatherInsights();
         generateAIAnalysis();
@@ -2345,4 +2438,487 @@ document.addEventListener("DOMContentLoaded", function () {
       generateAIAnalysis();
     }
   }
+
+  // ========== Weather Layers Map Functions ==========
+
+  function initializeWeatherLayersMap(lat, lon) {
+    console.log("🗺️ Initializing weather layers map at:", lat, lon);
+
+    const mapContainer = document.getElementById("weather-layers-map");
+    if (!mapContainer) {
+      console.error("❌ Weather layers map container not found!");
+      return;
+    }
+
+    // Wait for Leaflet to be loaded
+    if (typeof L === "undefined") {
+      console.warn("⏳ Leaflet not loaded yet. Retrying in 500ms...");
+      setTimeout(() => initializeWeatherLayersMap(lat, lon), 500);
+      return;
+    }
+
+    // Initialize map if not already done
+    if (!weatherLayersMap) {
+      mapContainer.innerHTML = "";
+
+      try {
+        weatherLayersMap = L.map("weather-layers-map", {
+          center: [lat, lon],
+          zoom: 6,
+          zoomControl: true,
+          scrollWheelZoom: true,
+        });
+
+        // Add base tile layer
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom: 18,
+        }).addTo(weatherLayersMap);
+
+        // Add initial weather layer (clouds)
+        addWeatherLayer("clouds");
+
+        console.log("✅ Weather layers map initialized successfully");
+      } catch (error) {
+        console.error("Error initializing weather layers map:", error);
+        mapContainer.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger-color);">
+            <div style="text-align: center;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 10px;"></i>
+              <p>Weather layers map failed to load</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+    } else {
+      // Update existing map
+      console.log("📍 Updating weather layers map to new location:", lat, lon);
+      weatherLayersMap.setView([lat, lon], 6);
+    }
+
+    // Invalidate size to fix rendering issues
+    setTimeout(() => {
+      if (weatherLayersMap) {
+        weatherLayersMap.invalidateSize();
+      }
+    }, 100);
+  }
+
+  function addWeatherLayer(layerType) {
+    if (!weatherLayersMap) return;
+
+    // Remove existing weather layer
+    if (currentWeatherLayer) {
+      weatherLayersMap.removeLayer(currentWeatherLayer);
+    }
+
+    // Layer configurations
+    const layerConfigs = {
+      clouds: {
+        url: `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.6,
+      },
+      precipitation: {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.7,
+      },
+      rain: {
+        url: `https://tile.openweathermap.org/map/rain_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.7,
+      },
+      snow: {
+        url: `https://tile.openweathermap.org/map/snow_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.7,
+      },
+      temp: {
+        url: `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.6,
+      },
+      wind: {
+        url: `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.6,
+      },
+      pressure: {
+        url: `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.6,
+      },
+      storm: {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.8,
+      },
+      cyclone: {
+        url: `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.7,
+      },
+      uv: {
+        url: `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.6,
+      },
+      "air-quality": {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.5,
+      },
+      "sea-pressure": {
+        url: `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.7,
+      },
+      satellite: {
+        url: `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+        opacity: 0.8,
+      },
+    };
+
+    const config = layerConfigs[layerType];
+    if (config) {
+      currentWeatherLayer = L.tileLayer(config.url, {
+        attribution: "Weather data &copy; OpenWeatherMap",
+        opacity: config.opacity,
+        maxZoom: 18,
+      }).addTo(weatherLayersMap);
+
+      activeLayerType = layerType;
+      updateLegend(layerType);
+    }
+  }
+
+  function switchWeatherLayer(layerType) {
+    if (layerType === activeLayerType) return;
+
+    console.log("🔄 Switching to layer:", layerType);
+    addWeatherLayer(layerType);
+  }
+
+  function updateLegend(layerType) {
+    const legendContent = document.getElementById("legend-content");
+    if (!legendContent) return;
+
+    const legends = {
+      clouds: {
+        title: "Cloud Coverage",
+        description:
+          "Shows cloud coverage across the region. Darker areas indicate heavier cloud cover.",
+        info: "<strong>Light areas:</strong> Clear skies<br><strong>Dark areas:</strong> Heavy cloud cover",
+      },
+      precipitation: {
+        title: "Precipitation",
+        description:
+          "Displays all forms of precipitation including rain, snow, and mixed precipitation.",
+        info: "<strong>Blue/Green:</strong> Light precipitation<br><strong>Yellow/Red:</strong> Heavy precipitation",
+      },
+      rain: {
+        title: "Rainfall",
+        description:
+          "Shows current and forecasted rainfall intensity across the region.",
+        info: "<strong>Light blue:</strong> Light rain<br><strong>Dark blue/Purple:</strong> Heavy rain",
+      },
+      snow: {
+        title: "Snowfall",
+        description:
+          "Displays snow coverage and intensity. Useful for winter weather tracking.",
+        info: "<strong>Light areas:</strong> Light snow<br><strong>Dark areas:</strong> Heavy snow",
+      },
+      temp: {
+        title: "Temperature",
+        description:
+          "Shows temperature distribution across the region in real-time.",
+        info: "<strong>Blue:</strong> Cold<br><strong>Green/Yellow:</strong> Moderate<br><strong>Red:</strong> Hot",
+      },
+      wind: {
+        title: "Wind Speed",
+        description:
+          "Displays wind speed patterns and intensity across the area.",
+        info: "<strong>Light colors:</strong> Calm winds<br><strong>Dark colors:</strong> Strong winds",
+      },
+      pressure: {
+        title: "Atmospheric Pressure",
+        description:
+          "Shows atmospheric pressure systems. Helps identify weather patterns.",
+        info: "<strong>High pressure:</strong> Generally clear weather<br><strong>Low pressure:</strong> Potential for storms",
+      },
+      storm: {
+        title: "Storm Systems",
+        description:
+          "Displays active storm systems, thunderstorms, and severe weather events.",
+        info: "<strong>Light colors:</strong> Light storms<br><strong>Dark/Intense colors:</strong> Severe storms and thunderstorms<br><strong>Red areas:</strong> Dangerous storm activity",
+      },
+      cyclone: {
+        title: "Cyclonic Activity",
+        description:
+          "Shows cyclonic wind patterns, hurricanes, typhoons, and tropical storms.",
+        info: "<strong>Spiral patterns:</strong> Cyclonic rotation<br><strong>Dense areas:</strong> Strong cyclonic activity<br><strong>Eye patterns:</strong> Hurricane/typhoon centers",
+      },
+      uv: {
+        title: "UV Index",
+        description:
+          "Displays ultraviolet radiation levels across different regions.",
+        info: "<strong>Green/Blue:</strong> Low UV (0-2)<br><strong>Yellow:</strong> Moderate UV (3-5)<br><strong>Orange:</strong> High UV (6-7)<br><strong>Red:</strong> Very High UV (8-10)<br><strong>Purple:</strong> Extreme UV (11+)",
+      },
+      "air-quality": {
+        title: "Air Quality Index",
+        description:
+          "Shows air pollution levels and air quality across regions.",
+        info: "<strong>Green:</strong> Good air quality<br><strong>Yellow:</strong> Moderate pollution<br><strong>Orange:</strong> Unhealthy for sensitive groups<br><strong>Red:</strong> Unhealthy air quality<br><strong>Purple:</strong> Very unhealthy",
+      },
+      "sea-pressure": {
+        title: "Sea Level Pressure",
+        description:
+          "Displays atmospheric pressure at sea level, useful for marine weather.",
+        info: "<strong>High pressure:</strong> Stable weather conditions<br><strong>Low pressure:</strong> Storm development potential<br><strong>Gradient lines:</strong> Pressure changes and wind patterns",
+      },
+      satellite: {
+        title: "Satellite Imagery",
+        description:
+          "Real-time satellite view showing cloud formations and weather systems.",
+        info: "<strong>White areas:</strong> Dense cloud cover<br><strong>Gray areas:</strong> Thin clouds<br><strong>Clear areas:</strong> No cloud cover<br><strong>Swirl patterns:</strong> Storm systems and weather fronts",
+      },
+    };
+
+    const legend = legends[layerType];
+    if (legend) {
+      legendContent.innerHTML = `
+        <p><strong>${legend.title}:</strong> ${legend.description}</p>
+        <p style="margin-top: 10px;">${legend.info}</p>
+        <p style="margin-top: 10px; font-size: 0.85rem; color: var(--secondary-color);">
+          <i class="fas fa-info-circle"></i> Data updates in real-time from OpenWeatherMap
+        </p>
+      `;
+    }
+  }
+
+  // ========== Advanced Weather Layer Functions ==========
+
+  function handleLayerSelection(layerType) {
+    if (multiLayerMode) {
+      toggleLayerInMultiMode(layerType);
+    } else {
+      switchWeatherLayer(layerType);
+    }
+  }
+
+  function toggleLayerInMultiMode(layerType) {
+    const index = activeLayers.findIndex((layer) => layer.type === layerType);
+
+    if (index > -1) {
+      // Remove layer
+      if (activeLayers[index].layer) {
+        weatherLayersMap.removeLayer(activeLayers[index].layer);
+      }
+      activeLayers.splice(index, 1);
+    } else {
+      // Add layer
+      const layerConfig = getLayerConfig(layerType);
+      if (layerConfig) {
+        const layer = L.tileLayer(layerConfig.url, {
+          attribution: "Weather data &copy; OpenWeatherMap",
+          opacity: layerOpacity,
+          maxZoom: 18,
+        }).addTo(weatherLayersMap);
+
+        activeLayers.push({ type: layerType, layer: layer });
+      }
+    }
+
+    updateLegend(
+      activeLayers.length > 0
+        ? activeLayers[activeLayers.length - 1].type
+        : "clouds"
+    );
+  }
+
+  function getLayerConfig(layerType) {
+    const layerConfigs = {
+      clouds: {
+        url: `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      precipitation: {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      rain: {
+        url: `https://tile.openweathermap.org/map/rain_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      snow: {
+        url: `https://tile.openweathermap.org/map/snow_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      temp: {
+        url: `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      wind: {
+        url: `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      pressure: {
+        url: `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      storm: {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      cyclone: {
+        url: `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      uv: {
+        url: `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      "air-quality": {
+        url: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      "sea-pressure": {
+        url: `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+      satellite: {
+        url: `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`,
+      },
+    };
+    return layerConfigs[layerType];
+  }
+
+  function updateLayerOpacity() {
+    if (multiLayerMode) {
+      activeLayers.forEach((layerObj) => {
+        if (layerObj.layer) {
+          layerObj.layer.setOpacity(layerOpacity);
+        }
+      });
+    } else if (currentWeatherLayer) {
+      currentWeatherLayer.setOpacity(layerOpacity);
+    }
+  }
+
+  function toggleMultiLayer() {
+    multiLayerMode = !multiLayerMode;
+    const btn = document.getElementById("combine-layers");
+
+    if (multiLayerMode) {
+      btn.classList.add("active");
+      btn.querySelector("span")
+        ? (btn.querySelector("span").textContent = "Single Layer")
+        : null;
+      showToast(
+        "Multi-layer mode enabled. Click multiple layer buttons to combine them."
+      );
+    } else {
+      btn.classList.remove("active");
+      btn.querySelector("span")
+        ? (btn.querySelector("span").textContent = "Multi-Layer")
+        : null;
+
+      // Clear all layers and show only the active one
+      activeLayers.forEach((layerObj) => {
+        if (layerObj.layer) {
+          weatherLayersMap.removeLayer(layerObj.layer);
+        }
+      });
+      activeLayers = [];
+
+      // Reset to single layer mode
+      addWeatherLayer(activeLayerType);
+      showToast("Single layer mode enabled.");
+    }
+  }
+
+  function toggleAnimation() {
+    const btn = document.getElementById("toggle-animation");
+    const icon = btn.querySelector("i");
+    const text = btn.querySelector("span");
+
+    if (isAnimating) {
+      clearInterval(animationInterval);
+      isAnimating = false;
+      icon.className = "fas fa-play";
+      text.textContent = "Play Animation";
+      btn.classList.remove("active");
+      showToast("Animation stopped");
+    } else {
+      startLayerAnimation();
+      isAnimating = true;
+      icon.className = "fas fa-pause";
+      text.textContent = "Stop Animation";
+      btn.classList.add("active");
+      showToast("Animation started - cycling through weather layers");
+    }
+  }
+
+  function startLayerAnimation() {
+    const layers = [
+      "clouds",
+      "precipitation",
+      "rain",
+      "snow",
+      "temp",
+      "wind",
+      "pressure",
+      "storm",
+    ];
+    let currentIndex = 0;
+
+    animationInterval = setInterval(() => {
+      const layerType = layers[currentIndex];
+      switchWeatherLayer(layerType);
+
+      // Update UI to show current layer
+      updateActiveLayerUI(layerType);
+
+      currentIndex = (currentIndex + 1) % layers.length;
+    }, 7000); // Change layer every 7 seconds
+  }
+
+  function updateActiveLayerUI(layerType) {
+    // Update desktop buttons
+    document.querySelectorAll(".layer-btn").forEach((btn) => {
+      if (btn.getAttribute("data-layer") === layerType) {
+        btn.classList.add("active");
+      }
+    });
+
+    // Update mobile dropdown
+    const mobileBtn = document.getElementById("mobile-layer-btn");
+    const mobileItems = document.querySelectorAll(".mobile-layer-item");
+
+    mobileItems.forEach((item) => {
+      item.classList.remove("active");
+      if (item.getAttribute("data-layer") === layerType) {
+        item.classList.add("active");
+        if (mobileBtn) {
+          const layerName = item.textContent.trim();
+          const layerIcon = item.querySelector("i").className;
+          mobileBtn.querySelector("i").className = layerIcon;
+          mobileBtn.querySelector("span").textContent = layerName;
+        }
+      }
+    });
+  }
+
+  function showLoadingIndicator() {
+    if (layerLoading) {
+      layerLoading.classList.remove("hidden");
+    }
+  }
+
+  function hideLoadingIndicator() {
+    if (layerLoading) {
+      setTimeout(() => {
+        layerLoading.classList.add("hidden");
+      }, 500);
+    }
+  }
+
+  // Override the original switchWeatherLayer function to include loading states
+  function switchWeatherLayer(layerType) {
+    if (layerType === activeLayerType && !multiLayerMode) return;
+
+    showLoadingIndicator();
+    console.log("🔄 Switching to layer:", layerType);
+
+    setTimeout(() => {
+      addWeatherLayer(layerType);
+      hideLoadingIndicator();
+    }, 300);
+  }
+
+  // Initialize weather layers map when page loads with default location
+  setTimeout(() => {
+    if (currentCoords) {
+      initializeWeatherLayersMap(currentCoords.lat, currentCoords.lon);
+    }
+  }, 2000);
 });
