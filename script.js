@@ -2848,6 +2848,11 @@ document.addEventListener("DOMContentLoaded", function () {
       "wind",
       "pressure",
       "storm",
+      "cyclone",
+      "uv",
+      "air-quality",
+      "sea-pressure",
+      "satellite",
     ];
     let currentIndex = 0;
 
@@ -2863,6 +2868,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function updateActiveLayerUI(layerType) {
+    // Remove active class from all desktop buttons first
+    document.querySelectorAll(".layer-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+
     // Update desktop buttons
     document.querySelectorAll(".layer-btn").forEach((btn) => {
       if (btn.getAttribute("data-layer") === layerType) {
@@ -2874,8 +2884,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const mobileBtn = document.getElementById("mobile-layer-btn");
     const mobileItems = document.querySelectorAll(".mobile-layer-item");
 
+    // Remove active class from all mobile items first
     mobileItems.forEach((item) => {
       item.classList.remove("active");
+    });
+
+    mobileItems.forEach((item) => {
       if (item.getAttribute("data-layer") === layerType) {
         item.classList.add("active");
         if (mobileBtn) {
