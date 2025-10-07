@@ -1,6 +1,31 @@
 User-agent: *
 Allow: /
-Sitemap: https://weatherify-ai.netlify.app/sitemap.xml
-
 Disallow: /_redirects
 Disallow: /_headers
+Disallow: /private/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.js$ 
+Disallow: /*.css$
+
+Sitemap: https://weatherify-ai.netlify.app/sitemap.xml
+
+User-agent: Googlebot
+Allow: /*.css
+Allow: /*.js
+
+User-agent: Googlebot-Image
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.webp$
+Disallow: /assets/images/icons/
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
