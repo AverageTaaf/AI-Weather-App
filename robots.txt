@@ -1,14 +1,20 @@
 User-agent: *
 Allow: /
-
-# Disallow system / config files
 Disallow: /_redirects
 Disallow: /_headers
+Disallow: /*.json$
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
-Disallow: /settings/
-Disallow: /account/
 
-# Sitemap
+# Allow important assets
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.svg$
+Allow: /*.webp$
+
+# Sitemap location
 Sitemap: https://weatherify-ai.netlify.app/sitemap.xml
